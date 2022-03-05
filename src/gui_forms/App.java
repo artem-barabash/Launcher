@@ -17,9 +17,9 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.text.ParseException;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -50,8 +50,8 @@ public class App extends JFrame {
     private JButton stopButton;
     private JTabbedPane tabbedPane1;
     private JButton launchButton;
-    public JLabel labelDistance;
-    public JLabel labelConsumption;
+    JLabel labelDistance;
+    JLabel labelConsumption;
 
     private JPanel centralPanel;
 
@@ -69,9 +69,11 @@ public class App extends JFrame {
 
     static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
+
+    //Один раз включил(запустил)
     private boolean launchfact = false;
-    private static Date now = new Date();
-    private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
+
+
 
     public App() throws IOException {
         super("App");
@@ -148,12 +150,11 @@ public class App extends JFrame {
         //добавляет в коллекцию JList
         listIterations.add(it);
 
-
         //метод для обновления списка
         refreshItemsListABC();
 
 
-        System.out.println("listIterations.size = " + listIterations.size() + ", listModel.size = " + listModel.size());
+        //System.out.println("listIterations.size = " + listIterations.size() + ", listModel.size = " + listModel.size());
     }
 
     public static void refreshItemsListABC() {
@@ -183,16 +184,17 @@ public class App extends JFrame {
     }
 
 
-    void showDataFlight() {
+
+     void showDataFlight() {
+
+        labelDistance.setText("");
+        labelConsumption.setText("");
+
         labelDistance.setText("1.Rocket has flied " + currentDistance + " km.");
         labelConsumption.setText("2.The fuel left " + currentQuelityConsumption + " kg.");
-
-        System.out.println("1.Rocket has flied " + currentDistance + " km.");
-        System.out.println("2.The fuel left " + currentQuelityConsumption + " kg.");
     }
 
     private void createUIComponents() throws IOException {
-
 
     }
 
@@ -207,7 +209,8 @@ public class App extends JFrame {
         //6.TODO Написать Unit Test
     }
 
-    public static void startMotors() throws InterruptedException {
+    public static void startMotors() throws InterruptedException, ParseException {
+
         final BlockingQueue<DataFlight> queue1 = new ArrayBlockingQueue<DataFlight>(100);
         final BlockingQueue<DataFlight> queue2 = new ArrayBlockingQueue<DataFlight>(100);
 
@@ -216,9 +219,6 @@ public class App extends JFrame {
         final Thread thread2 = new MotorThread(queue2);
         thread2.start();
 
-
-
-
         ///1.TODO java.lang.ArrayIndexOutOfBoundsException некорректно работает очередь при добавлении в коллекцию
         while (true) {
             //сумма  дистанции первого и второго двигателя
@@ -226,11 +226,11 @@ public class App extends JFrame {
             //сумма расхода горючего первого и второго двигателя
             currentQuelityConsumption = queue1.take().quelityConsumption + queue2.take().quelityConsumption;
             //добаляем в JList на JPanel
-            app.addItem(simpleDateFormat.format(now) + " - Rocket has flied " + String.format("%.2f", currentDistance) + " km. already.\nThe fuel left " + String.format("%.2f", currentQuelityConsumption) + " kg. yet.");
+
+            //date instant now
+            app.addItem(Instant.now().toString() + " - Rocket has flied " + String.format("%.2f", currentDistance) + " km. already.\nThe fuel left " + String.format("%.2f", currentQuelityConsumption) + " kg. yet.");
         }
 
     }
-
-
 }
 
