@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class TextFileReader extends ArrayList<String> {
     public static String read(String filePath){
@@ -56,6 +57,21 @@ public class TextFileReader extends ArrayList<String> {
         System.out.println("123".matches("-?\\d+"));        // да
         System.out.println("+123".matches("-?\\d+"));       // нет
         System.out.println("+123".matches("(-|\\+)?\\d+"));
+
+        String s = "This is a sample sentence.";
+        String[] words = s.split(" ");
+        for (int i = 0; i < words.length; i++) {
+            // You may want to check for a non-word character before blindly
+            // performing a replacement
+            // It may also be necessary to adjust the character class
+            //words[i] = words[i].replaceAll("[^\\w]", "");
+            System.out.println(words[i] + "\n");
+
+        }
+        System.out.print(Arrays.toString(words));
+
+
+
     }
 
 

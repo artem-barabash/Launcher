@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 public class TextReader {
 
-    static String str = read("F:\\java-работы\\act.txt");
+    static String str = read("res/text/act.txt");
 
     public static String read(String filePath) {
         StringBuilder sb = new StringBuilder();
@@ -35,39 +35,51 @@ public class TextReader {
 
     public static void main(String[] args) {
 
+        CheckTextFile checkTextFile = new CheckTextFile(str);
 
-        //1.Находим в списком экипажа по должностям
-        ArrayList<CrewMember> members  = methodToolSearchWordsinTheText(str);
-        System.out.println(members);
-        //2.Находим город запуска ракеты
-        String cityBasetakeOff = methodSearchCityBaseInTheText(str);
-        //3.Находим номер полета
-        int numberFlight = methodSearhNumberFlightIntheText(str);
-        //4.Находим к-сть топлива
-        double quelityConsumption = methodSearchQuelityConsumption(str);
 
-        //String [] array = str.split("");
-        //System.out.println(Arrays.toString(array));
-        System.out.println(numberFlight);
-        System.out.println(quelityConsumption);
-        System.out.println(cityBasetakeOff);
+        if(checkTextFile.indicatorAll){
+            //1.Находим в списком экипажа по должностям
+            ArrayList<CrewMember> members  = methodToolSearchWordsinTheText(str);
+            System.out.println(members);
+            //2.Находим город запуска ракеты
+            String cityBasetakeOff = methodSearchCityBaseInTheText(str);
+            //3.Находим номер полета
+            int numberFlight = methodSearhNumberFlightIntheText(str);
+            //4.Находим к-сть топлива
+            double quelityConsumption = methodSearchQuelityConsumption(str);
+
+            //String [] array = str.split("");
+            //System.out.println(Arrays.toString(array));
+            System.out.println(numberFlight);
+            System.out.println(quelityConsumption);
+            System.out.println(cityBasetakeOff);
+        }
+
 
 
         //TODO  Проверка текстового файла на правильность составления: ключевые слова, абзацы
         //TODO
-        // 1.Заголовки The order  и voucher,
-        // 2.к-ство слов
-        // 3.к-ств преложений
-        // 4.к-ство абзацев
-        // 5. предложения которые начинаються с ключевых слов.
-        // 6. наличее модели ракеты 7. списка экипажа с номерами.
-        // 8. число экипажа буквами
-        // 9.место запуска
-        // 10. должность и звание главнокомандуещеего
-        // 11. обьем выделенного горячего.
-        // 12. и полсе только ниже прописанная проверка с внесением данных в перемены и об'єкти.
+        // 1)к-ство слов+
+        // 2)к-ств предложений+
+        // 3)к-ство абзацев
+        // 4)Заголовки The order  и voucher,
+        // 5) предложения которые начинаються с ключевых слов.
+        // 6) наличее модели ракеты 7. списка экипажа с номерами.
+        // 8) число экипажа буквами
+        // 9)место запуска
+        // 10) должность и звание главнокомандуещеего
+        // 11) обьем выделенного горячего.
+        // 12) и полсе только ниже прописанная проверка с внесением данных в перемены и об'єкти.
+
+
+        //System.out.println(CheckTextFile.methodCheckCountWords(str));
+        //System.out.println(CheckTextFile.methodCheckCountSentences(str));
 
     }
+
+
+
 
 
     //1.Находим в списком экипажа по должностям
@@ -83,8 +95,6 @@ public class TextReader {
         int indexWordStart = 0;
 
         int indexWordEnd = currentTextDoc.indexOf("The commander".toLowerCase());
-        //System.out.println(indexWordEnd);
-
 
         for(String position : listCrewMembersPositions){
             int currentWordIndex = 0;
@@ -124,8 +134,6 @@ public class TextReader {
                     ++numberMember;
                     list.add(searchDataPersonInSentance(numberMember,sentance));
                 }
-
-
             }
         }
 
@@ -216,7 +224,6 @@ public class TextReader {
                 sentence += textArray[i] + " ";
             }
         }
-        System.out.println("{" + sentence + "}");
 
         return "Launch place: " + parseCityFromSentence(sentence) + " - " + parseCountryFromSentence(sentence);
     }
@@ -244,6 +251,7 @@ public class TextReader {
 
         return result;
     }
+
     //2.3 Взять город из розпарсенной строки
     private static String parseCityFromSentence(String sentence) {
         int  startCity = sentence.indexOf("is");
@@ -259,7 +267,7 @@ public class TextReader {
         return result.substring(0, 1).toUpperCase() +   result.substring(1);
     }
 
-    //2.3 Взять страну из розпарсенной строки
+    //2.4 Взять страну из розпарсенной строки
     private static String parseCountryFromSentence(String sentence) {
         int startCountry = sentence.indexOf(",");
         int endCountryStopPoint = sentence.indexOf(".");
