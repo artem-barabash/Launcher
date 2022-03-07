@@ -62,7 +62,7 @@ public class TextReader {
         //TODO
         // 1)к-ство слов+
         // 2)к-ств предложений+
-        // 3)к-ство абзацев
+        // 3)к-ство абзацев+
         // 4)Заголовки The order  и voucher,
         // 5) предложения которые начинаються с ключевых слов.
         // 6) наличее модели ракеты 7. списка экипажа с номерами.
@@ -78,10 +78,6 @@ public class TextReader {
 
     }
 
-
-
-
-
     //1.Находим в списком экипажа по должностям
     static ArrayList<CrewMember> methodToolSearchWordsinTheText(String text){
 
@@ -89,7 +85,7 @@ public class TextReader {
         String listCrewMembersPositions[] = {"Commander", "Engineer", "Gunner", "Doctor", "Tourist"};
         int numberMember = 0;
 
-        char[] strToArray = text.toCharArray();
+        char[] strToCharArray = text.toCharArray();
         String currentTextDoc = text.toLowerCase();
 
         int indexWordStart = 0;
@@ -104,9 +100,9 @@ public class TextReader {
 
             indexWordStart = currentTextDoc.indexOf(position.toLowerCase());
 
-            for(int j = indexWordStart; j < strToArray.length; j++) {
-                if(strToArray[j] != '.'){
-                    sentance += Character.toString(strToArray[j]);
+            for(int j = indexWordStart; j < strToCharArray.length; j++) {
+                if(strToCharArray[j] != '.'){
+                    sentance += Character.toString(strToCharArray[j]);
 
                 }else {
                     break;
@@ -123,9 +119,9 @@ public class TextReader {
 
                 if(currentWordIndex < indexWordEnd){
                     sentance = "";
-                    for (int j = currentWordIndex; j < strToArray.length; j++) {
-                        if (strToArray[j] != '.') {
-                            sentance += Character.toString(strToArray[j]);
+                    for (int j = currentWordIndex; j < strToCharArray.length; j++) {
+                        if (strToCharArray[j] != '.') {
+                            sentance += Character.toString(strToCharArray[j]);
 
                         } else {
                             break;
