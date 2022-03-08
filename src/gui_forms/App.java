@@ -2,6 +2,7 @@ package gui_forms;
 
 import model.CityBase;
 import model.DataFlight;
+import model.LauncherRocketModel;
 import operations.ChangeOperationOnMonitor;
 import operations.LandingCrewAndMachine;
 import threads.LaunchThread;
@@ -18,8 +19,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.time.Instant;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -36,7 +38,6 @@ public class App extends JFrame {
     public final static double speed = 3.95; // скорость за секунду одного мотора
 
     public static double distance = 0;
-    public static JFrame frame;
 
     public static double currentDistance;
     public static double currentQuelityConsumption;
@@ -73,13 +74,19 @@ public class App extends JFrame {
     //Один раз включил(запустил)
     private boolean launchfact = false;
 
+    LauncherRocketModel launcherRocketModel;
 
 
-    public App() throws IOException {
-        super("App");
+
+    public App(LauncherRocketModel launcherRocketModel) throws IOException {
+
+
+        super("Launcher");
         this.setContentPane(this.panelMain);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();
+
+        this.launcherRocketModel = launcherRocketModel;
 
         listIterations = new ArrayList<String>();
         listModel = new DefaultListModel();
@@ -89,6 +96,9 @@ public class App extends JFrame {
 
 
         monitorPanel.add(firstPictureOnStart);
+
+        System.out.println(launcherRocketModel.toString());
+
 
         launchButton.addActionListener(new ActionListener() {
             @Override
@@ -198,7 +208,7 @@ public class App extends JFrame {
 
     }
 
-    public static void main(String[] args) throws  IOException {
+    /*public static void main(String[] args) throws  IOException {
         app = new App();
         app.setSize(screenSize.width, screenSize.height);
         app.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -207,9 +217,12 @@ public class App extends JFrame {
         //4.TODO данные в таблицу SQLite, после каждого запуска. Во второй вкладке tablePanel данные о полетах. Сделать таким образом чтобы БД работала на другом компьютере.Ознакомится с информацией каким образом єто можно граматно сделать. Примеры упакованной Java Swing c БД SQLite
         //5.TODO Дополнить TextReader, перед запуском спрашивать файлик с данными о полете
         //6.TODO Написать Unit Test
-    }
+    }*/
 
     public static void startMotors() throws InterruptedException, ParseException {
+
+        Date now = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
 
         final BlockingQueue<DataFlight> queue1 = new ArrayBlockingQueue<DataFlight>(100);
         final BlockingQueue<DataFlight> queue2 = new ArrayBlockingQueue<DataFlight>(100);
@@ -228,7 +241,7 @@ public class App extends JFrame {
             //добаляем в JList на JPanel
 
             //date instant now
-            app.addItem(Instant.now().toString() + " - Rocket has flied " + String.format("%.2f", currentDistance) + " km. already.\nThe fuel left " + String.format("%.2f", currentQuelityConsumption) + " kg. yet.");
+            app.addItem(simpleDateFormat.format(now) + " - Rocket has flied " + String.format("%.2f", currentDistance) + " km. already.\nThe fuel left " + String.format("%.2f", currentQuelityConsumption) + " kg. yet.");
         }
 
     }

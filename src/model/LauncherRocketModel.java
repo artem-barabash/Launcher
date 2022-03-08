@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LancherRocketModel {
+public class LauncherRocketModel {
     int numberFlight;//number flight
     String cityBaseTakeOff;// место взлета
     CityBase cityBaseLandingSite; // место посадки
@@ -20,7 +20,7 @@ public class LancherRocketModel {
     //date need insert into sqlite!!!!
 
 
-    public LancherRocketModel(int numberFlight, String cityBaseTakeOff, CityBase cityBaseLandingSite, SimpleDateFormat simpleDateFormat, double quelityConsumption, ArrayList<CrewMember> crewMembers, List<DateEvent> listEventDates) {
+    public LauncherRocketModel(int numberFlight, String cityBaseTakeOff, CityBase cityBaseLandingSite, SimpleDateFormat simpleDateFormat, double quelityConsumption, ArrayList<CrewMember> crewMembers, List<DateEvent> listEventDates) {
         this.numberFlight = numberFlight;
         this.cityBaseTakeOff = cityBaseTakeOff;
         this.cityBaseLandingSite = cityBaseLandingSite;
@@ -89,14 +89,14 @@ public class LancherRocketModel {
 
     @Override
     public String toString() {
-        return "LancherRocketModel{" +
-                "numberFlight=" + numberFlight +
-                ", cityBaseTakeOff=" + cityBaseTakeOff +
-                ", cityBaseLandingSite=" + cityBaseLandingSite +
-                ", simpleDateFormat=" + simpleDateFormat +
-                ", quelityConsumption=" + quelityConsumption +
-                ", crewMembers=" + crewMembers +
-                ", listEventDates=" + listEventDates +
+        return "LauncherRocketModel{" + "\n" +
+                "numberFlight=" + numberFlight + "\n" +
+                ", cityBaseTakeOff=" + cityBaseTakeOff + "\n" +
+                ", cityBaseLandingSite=" + cityBaseLandingSite +"\n" +
+                ", simpleDateFormat=" + simpleDateFormat.toString() + "\n" +
+                ", quelityConsumption=" + quelityConsumption + "\n" +
+                ", crewMembers=" + crewMembers + "\n" +
+                ", listEventDates=" + listEventDates + "\n" +
                 '}';
     }
 }

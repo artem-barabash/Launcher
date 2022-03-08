@@ -1,18 +1,42 @@
 package operations;
 
+import gui_forms.App;
+import model.DateEvent;
+import model.LauncherRocketModel;
 import model.crewmemebers.*;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TextReader {
 
-    static String str = read("res/text/act.txt");
+    static App app;
+    static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+    //проверка текста на соотвествие правил оформления
+    public  CheckTextFile checkTextFile;
+
+
+    public TextReader() {
+    }
+
+    public CheckTextFile getCheckTextFile() {
+        return checkTextFile;
+    }
+
+    public void setCheckTextFile(CheckTextFile checkTextFile) {
+        this.checkTextFile = checkTextFile;
+    }
 
     public static String read(String filePath) {
         StringBuilder sb = new StringBuilder();
@@ -33,27 +57,60 @@ public class TextReader {
         return sb.toString();
     }
 
-    public static void main(String[] args) {
+    public  void runTextReader(String str) {
+        String text = read(str);
 
-        CheckTextFile checkTextFile = new CheckTextFile(str);
+        checkTextFile = new CheckTextFile(text);
 
 
         if(checkTextFile.indicatorAll){
             //1.Находим в списком экипажа по должностям
-            ArrayList<CrewMember> members  = methodToolSearchWordsinTheText(str);
-            System.out.println(members);
+            ArrayList<CrewMember> members  = methodToolSearchWordsinTheText(text);
             //2.Находим город запуска ракеты
-            String cityBasetakeOff = methodSearchCityBaseInTheText(str);
-            //3.Находим номер полета
-            int numberFlight = methodSearhNumberFlightIntheText(str);
+            String cityBasetakeOff = methodSearchCityBaseInTheText(text);
+            //3.Находим номер полета и путевку
+            int numberFlight = methodSearhNumberFlightIntheText(text, "order");
+            //int numberVoucher = methodSearhNumberFlightIntheText(text, "voucher");
+
             //4.Находим к-сть топлива
-            double quelityConsumption = methodSearchQuelityConsumption(str);
+            double quelityConsumption = methodSearchQuelityConsumption(text);
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
+            //TODO разобраться с simpleDateFormat коректная подача времени
+            Date now = new Date();
+            simpleDateFormat.format(now);
+
+
+
+            List<DateEvent> listEventDates = null;
+
+            LauncherRocketModel launcherRocketModel = new LauncherRocketModel(numberFlight, cityBasetakeOff, null, simpleDateFormat,quelityConsumption, members, listEventDates);
+
+            try {
+                app = new App(launcherRocketModel);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            app.setSize(screenSize.width, screenSize.height);
+            app.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            app.setVisible(true);
+
+
 
             //String [] array = str.split("");
             //System.out.println(Arrays.toString(array));
-            System.out.println(numberFlight);
+            /*System.out.println("number Flight = " + numberFlight);
+            System.out.println("voucher = " + numberVoucher);
             System.out.println(quelityConsumption);
             System.out.println(cityBasetakeOff);
+
+            String allText = text.toLowerCase();
+            String textArray[] = allText.split(" ");
+            System.out.println(Arrays.toString(textArray));
+
+            System.out.println(searchElementInArray(0, "voucher", textArray));*/
+        }else {
+            JOptionPane.showMessageDialog(null, "Data aren't correctly!");
         }
 
 
@@ -278,8 +335,8 @@ public class TextReader {
         return result.substring(0, 1).toUpperCase() + result.substring(1);
     }
 
-    //3.Находим номер полета
-    private static int methodSearhNumberFlightIntheText(String str) {
+    //3.Находим номер полета и номер путевки
+    private static int methodSearhNumberFlightIntheText(String str, String caption) {
         int result = 0;
 
         String allText = str.toLowerCase();
@@ -288,7 +345,7 @@ public class TextReader {
         Pattern pat = Pattern.compile("[-]?[0-9]+(.[0-9]+)?");
         Matcher matcher;
 
-        int indexOrder = searchElementInArray(0,"order", textArray);
+        int indexOrder = searchElementInArray(0,caption, textArray);
 
         for(int i = indexOrder; i < textArray.length; i++){
             matcher = pat.matcher(textArray[i]);

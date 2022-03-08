@@ -1,7 +1,6 @@
 package operations;
 
 import javax.swing.*;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,6 +15,13 @@ public class CheckTextFile {
     }
 
 
+    public boolean isIndicatorAll() {
+        return indicatorAll;
+    }
+
+    public void setIndicatorAll(boolean indicatorAll) {
+        this.indicatorAll = indicatorAll;
+    }
 
     // 1)к-ство слов
      void methodCheckCountWords(String str) {
@@ -102,32 +108,6 @@ public class CheckTextFile {
     void methodCheckCaptions(String str){
         //алгоритм поиска
 
-        String [] textInStringArray = str.split(" ");
-
-        String wordTheOrder = "Order";
-        String wordTheVoucher = "Voucher";
-
-        int numberFlight = 0;
-
-        System.out.println(Arrays.toString(textInStringArray));
-
-        String currentElement;
-
-        Pattern pat = Pattern.compile("[-]?[0-9]+(.[0-9]+)?");
-        Matcher matcher;
-
-        for(int i = 0; i < textInStringArray.length; i++){
-
-            if(wordTheOrder.equals(textInStringArray[i])){
-
-                if("The".equals(textInStringArray[i - 1]) &&  textInStringArray[i + 1].contains("№")){
-                    currentElement = textInStringArray[i + 1];
-                    numberFlight = parseIntegerFromText(currentElement);
-                }
-            }
-        }
-
-        System.out.println("Number flight -" + numberFlight);
 
 
     }
