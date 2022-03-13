@@ -7,11 +7,12 @@ import java.util.regex.Pattern;
 public class CheckTextFile {
     boolean indicatorAll = false;
 
-    public CheckTextFile(String textFile){
+    public CheckTextFile(String textFile) {
         methodCheckCountWords(textFile);
         methodCheckCountSentences(textFile);
         methodCheckParagraghInText(textFile);
         methodCheckCaptions(textFile);
+        methodCheckPresenceOfSentenceInTheText(textFile);
     }
 
 
@@ -24,74 +25,74 @@ public class CheckTextFile {
     }
 
     // 1)к-ство слов
-     void methodCheckCountWords(String str) {
+    void methodCheckCountWords(String str) {
         String[] currentTextDoc = str.split(" ");
 
-        if(currentTextDoc.length > 100 && currentTextDoc.length < 200){
+        if (currentTextDoc.length > 100 && currentTextDoc.length < 200) {
             indicatorAll = true;
-        }else {
+        } else {
             JOptionPane.showMessageDialog(null, "The text must have at least 100, and not more than 200 words!");
             indicatorAll = false;
         }
     }
 
     //2)к-ств предложений
-     void methodCheckCountSentences(String str) {
-         char[] currentTextChar = str.toCharArray();
-         int countSentence = 0;
+    void methodCheckCountSentences(String str) {
+        char[] currentTextChar = str.toCharArray();
+        int countSentence = 0;
 
-         String sentence = "";
+        String sentence = "";
 
-         Pattern pat = Pattern.compile("[-]?[0-9]+(.[0-9]+)?");
-         Matcher matcher;
+        Pattern pat = Pattern.compile("[-]?[0-9]+(.[0-9]+)?");
+        Matcher matcher;
 
-         int currentIndexChar = 0;
+        int currentIndexChar = 0;
 
-         for (int i = 0; i < currentTextChar.length; i++) {
+        for (int i = 0; i < currentTextChar.length; i++) {
 
-             matcher = pat.matcher(String.valueOf(currentTextChar[i]));
+            matcher = pat.matcher(String.valueOf(currentTextChar[i]));
 
 
-             if (matcher.find()) {
-                 if (currentTextChar[i + 1] == '.') {
-                     countSentence--;
-                     currentIndexChar = i + 1;
-                 }
+            if (matcher.find()) {
+                if (currentTextChar[i + 1] == '.') {
+                    countSentence--;
+                    currentIndexChar = i + 1;
+                }
 
-                 if(currentTextChar[currentIndexChar + 1] == '\n'){
-                     countSentence++;
+                if (currentTextChar[currentIndexChar + 1] == '\n') {
+                    countSentence++;
 
-                 }
-                 currentIndexChar = 0;
+                }
+                currentIndexChar = 0;
 
-             }else {
-                 if (currentTextChar[i] == '.' || currentTextChar[i] == ':') {
-                     countSentence++;
-                 }
-             }
-         }
+            } else {
+                if (currentTextChar[i] == '.' || currentTextChar[i] == ':') {
+                    countSentence++;
+                }
+            }
+        }
 
 
         //System.out.println(Arrays.toString(currentTextChar));
         //System.out.println("Count sentence = " + countSentence);
 
-        indicatorAll = countSentence >= 12 && countSentence <= 17 ? true :  false;
+        indicatorAll = countSentence >= 12 && countSentence <= 17 ? true : false;
 
-         if(!indicatorAll){
-             JOptionPane.showMessageDialog(null, "The text must have at least 12 sentences! You have to put dots in sentences.");
-         }
+        if (!indicatorAll) {
+            JOptionPane.showMessageDialog(null, "The text must have at least 12 sentences! You have to put dots in sentences.");
+        }
     }
 
     // 3)к-ство абзацев
-    void methodCheckParagraghInText(String str){
+    void methodCheckParagraghInText(String str) {
         char[] currentTextChar = str.toCharArray();
         int countParagragh = 0;
 
-        for(int i = 0; i < currentTextChar.length; i++){
-            if(currentTextChar[i] == '.' || currentTextChar[i] == ':'){
+        for (int i = 0; i < currentTextChar.length; i++) {
+            if (currentTextChar[i] == '.' || currentTextChar[i] == ':') {
 
 
-                if(currentTextChar[i + 1] == '\n'){
+                if (currentTextChar[i + 1] == '\n') {
                     countParagragh++;
                 }
             }
@@ -99,29 +100,220 @@ public class CheckTextFile {
 
         indicatorAll = countParagragh >= 10 && countParagragh <= 15 ? true : false;
 
-        if(!indicatorAll){
+        if (!indicatorAll) {
             JOptionPane.showMessageDialog(null, "There must be at least 10 paragraphs in the text!");
         }
     }
 
     // 4)Заголовки The order  и voucher
-    void methodCheckCaptions(String str){
-        //алгоритм поиска
+    void methodCheckCaptions(String str) {
+        String allText = str.toLowerCase();
+        String textArray[] = allText.split(" ");
+        NumericClass numericClass = new NumericClass();
 
+        boolean resultCheck = false;
+
+        int indexTheOrder = numericClass.searchElement(0, "order", textArray);
+        int indexVoucher = numericClass.searchElement(0, "voucher", textArray);
+
+        if (indexTheOrder != -1 && indexTheOrder < 3) {
+
+            if (textArray[indexTheOrder - 1].equals("the") && findIntegerNumber(indexTheOrder, textArray) != 0) {
+                if (indexVoucher != -1) {
+                    if (findDoubleNumber(indexVoucher, "kg", textArray) == 0) {
+                        resultCheck = false;
+                        JOptionPane.showMessageDialog(null, "There must be quelity of consumption!");
+                    } else {
+                        resultCheck = true;
+                    }
+                } else {
+                    resultCheck = false;
+                    JOptionPane.showMessageDialog(null, "There must be 2 captions: The order and voucher!");
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "There must be 2 captions: The order and voucher!");
+        }
+
+        indicatorAll = resultCheck;
+
+    }
+
+    // 5) предложения которые начинаються с ключевых слов.
+    void methodCheckPresenceOfSentenceInTheText(String str) {
+        boolean isEmpty = false;
+
+        String[] listConcreteSentence = {
+                "rocket with a satellite on board is headed for a space expedition",
+                "The satellite will conduct scientific, economic,\n", "and military work",
+                "The satellite is accompanied by a crew of eight people:",
+                "The Launch  site is", "The Commander in Chief - ", "Ordered to allocate",
+                "of fuel for flight №", "The Commander in Chief\n"
+        };
+
+        String textArray[] = str.split("");
+        String temp = "";
+
+        if (methodCheckSentence(str, listConcreteSentence)) {
+            for (int i = 0; i < listConcreteSentence.length; i++) {
+                for (int j = 0; j < textArray.length; j++) {
+
+                    temp += textArray[j];
+                    if (temp.contains(listConcreteSentence[i])) {
+                        //if(listConcreteSentence[i].equals(commanderInChief))
+                        System.out.println("Sentence № " + i + " has index " + j);
+                        if (j == 0) isEmpty = false;
+                        else isEmpty = true;
+                        break;
+                    }
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "The text must be write structured!");
+        }
+        //System.out.println("isEmpty = " + isEmpty);
+        indicatorAll = isEmpty;
+        if (!isEmpty) JOptionPane.showMessageDialog(null, "The sentences must be correct order!");
+
+    }
+
+    //5.1 Проверка наличия приделожений
+    private boolean methodCheckSentence(String str, String[] listConcreteSentence) {
+        for (int i = 0; i < listConcreteSentence.length; i++) {
+            if (str.contains(listConcreteSentence[i])) {
+                return true;
+            } else {
+                break;
+            }
+        }
+        return false;
+    }
+
+    // 6 наличее модели ракеты
+     static void methodCheckModelRocket(String str) {
+        String allText = str.toLowerCase();
+        String textArray[] = allText.split(" ");
+
+        String modelsRocket[] = {"falcon", "dnipro", "launcher_one"};
+
+        int indexNameModel = 0;
+
+
+        for (String model : modelsRocket) {
+            indexNameModel = TextReader.searchElementInArray(0, model, textArray);
+            System.out.println("1 Iteration" +indexNameModel);
+            if(indexNameModel != -1) break;
+        }
+
+        if(indexNameModel == -1){
+            for (String model : modelsRocket) {
+                indexNameModel = TextReader.searchElementInArrayItem(0, model, textArray);
+                if(indexNameModel != -1) break;
+            }
+            if (indexNameModel == -1){
+                JOptionPane.showMessageDialog(null, "There is'nt model of rocket!");
+            }
+        }else {
+            //массив чтобы понять исходный регистр букв, если a/the, с мальнькой буквы тогда error
+            String textArrayUpperCase[] = str.split(" ");
+            if(searchWordEqualsOrContains(textArrayUpperCase[indexNameModel - 1],"A") || searchWordEqualsOrContains(textArrayUpperCase[indexNameModel - 1],"The")){
+
+                if(findIntegerNumberToSymbol(indexNameModel, "rocket", textArray) != -1){
+                    System.out.println("ok");
+                }else {
+                    JOptionPane.showMessageDialog(null, "The model haven't number!");
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "There is'nt article before model's name!");
+            }
+        }
 
 
     }
 
 
     //вспомогательные методы
-    // поиск String
-    static boolean searchInStringArray(String element, String arr[]){
-        for(String item : arr){
-           if(item.contains(element)) return true;
+
+    //Наличение числа int
+    static int findIntegerNumber(int index, String textArray[]){
+        Pattern pat = Pattern.compile("[-]?[0-9]+(.[0-9]+)?");
+        Matcher matcher;
+
+        int result = 0;
+
+        for(int i = index; i < textArray.length; i++){
+            matcher = pat.matcher(textArray[i]);
+            while (matcher.find()) {
+                result = Integer.parseInt(matcher.group());
+                break;
+            };
+            if(result != 0){
+                break;
+            }
         }
 
+        return result;
+    }
+
+    //Наличение числа int. ищет до конкретного элемент
+    static int findIntegerNumberToSymbol(int index, String endStrLine, String textArray[]){
+        int result = 0;
+        Pattern pat = Pattern.compile("[-]?[0-9]+(.[0-9]+)?");
+        Matcher matcher;
+
+        String sentence = "";
+
+        for(int i = index; i < textArray.length; i++){
+            if(!textArray[i].equals(endStrLine) || !textArray[i].contains(endStrLine)){
+                sentence += textArray[i];
+                //TODO не работает, не наъходить число
+                System.out.println("Index rocket" + i);
+                break;
+            }
+        }
+        matcher = pat.matcher(sentence);
+        while (matcher.find()) {
+            result = Integer.parseInt(matcher.group());
+            System.out.println(" rocket" + result);
+            break;
+        };
+
+        return result;
+    }
+
+    //наличие числа double
+    double findDoubleNumber(int index, String endStrLine, String textArray[]){
+        double result = 0;
+        Pattern pat = Pattern.compile("[-]?[0-9]+(.[0-9]+)?");
+        Matcher matcher;
+
+        String sentence = "";
+
+        for(int i = index; i < textArray.length; i++){
+            if(!textArray[i].equals(endStrLine)){
+                sentence += textArray[i];
+            }else {
+                break;
+            }
+        }
+        matcher = pat.matcher(sentence);
+        while (matcher.find()) {
+            result = Double.parseDouble(matcher.group());
+            break;
+        };
+
+        return result;
+    }
+
+    private static boolean searchWordEqualsOrContains(String line, String element){
+         if(line.equals(element)){
+             return true;
+         }else if(line.contains(element)){
+             return true;
+        }
         return false;
     }
+
 
     static int parseIntegerFromText(String text){
         StringBuffer num = new StringBuffer();

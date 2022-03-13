@@ -5,6 +5,7 @@ import model.crewmemebers.CrewMember;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
 
 public class LauncherRocketModel {
     int numberFlight;//number flight
@@ -89,11 +90,12 @@ public class LauncherRocketModel {
 
     @Override
     public String toString() {
+        Date date = new Date();
         return "LauncherRocketModel{" + "\n" +
                 "numberFlight=" + numberFlight + "\n" +
                 ", cityBaseTakeOff=" + cityBaseTakeOff + "\n" +
                 ", cityBaseLandingSite=" + cityBaseLandingSite +"\n" +
-                ", simpleDateFormat=" + simpleDateFormat.toString() + "\n" +
+                ", simpleDateFormat=" + simpleDateFormat.format(date) + "\n" +
                 ", quelityConsumption=" + quelityConsumption + "\n" +
                 ", crewMembers=" + crewMembers + "\n" +
                 ", listEventDates=" + listEventDates + "\n" +

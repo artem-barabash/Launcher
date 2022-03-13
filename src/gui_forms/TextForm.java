@@ -4,7 +4,6 @@ import operations.TextReader;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -18,9 +17,6 @@ public class TextForm extends JFrame {
     private JButton cancelButton;
     private JLabel resultLabel;
 
-
-    App app ;
-    static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
     public TextForm(){
         super("Launcher");
@@ -46,24 +42,6 @@ public class TextForm extends JFrame {
                     textReader.runTextReader(chooser.getSelectedFile().getAbsolutePath());
 
                     textForm.dispose();
-
-                    /*if(textReader.checkTextFile.isIndicatorAll()){
-
-                        try {
-                            app = new App();
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
-                        app.setSize(screenSize.width, screenSize.height);
-                        app.setExtendedState(JFrame.MAXIMIZED_BOTH);
-                        app.setVisible(true);
-
-                        //close window
-                        textForm.dispose();
-
-                    }else {
-                        JOptionPane.showMessageDialog(null, "Data aren't correctly!");
-                    }*/
 
                 }else {
                     JOptionPane.showMessageDialog(null, "Please, choose file.");

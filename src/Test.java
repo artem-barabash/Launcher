@@ -1,3 +1,5 @@
+import model.CityBase;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -7,7 +9,7 @@ public class Test {
 
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         String inputString = "Alive";
         String specialCharactersString = "!@#$%&*()'+,-./:;<=>?[]^_`{|}";
         for (int i=0; i < inputString.length() ; i++)
@@ -24,6 +26,11 @@ public class Test {
         System.out.println("-------------------------");
         //method();
         method1();
+        CityBase cityBase = new CityBase("Lviv", "Ukraine", true);
+
+
+        System.out.println(cityBase.hashCode());
+        System.out.println(cityBase.getClass());
 
     }
 

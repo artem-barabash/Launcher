@@ -1,5 +1,5 @@
-The Order № 109
-A falcon 9 rocket with a satellite on board is headed for a space expedition. The satellite will conduct scientific, economic, 
+The Order №109
+The falcon  rocket with a satellite on board is headed for a space expedition. The satellite will conduct scientific, economic,
 and military work. The satellite is accompanied by a crew of eight people:
 1. Commander - Mihailo Rozhovow.
 2. Engineer - Petro Sidorenko.
@@ -12,13 +12,16 @@ and military work. The satellite is accompanied by a crew of eight people:
 9. Tourist - Oleg Lyashko.
 10. Tourist - Hestor Mahno.
 
-The Launch  site is  Korotych , Ukraine.
+
+
+The Launch  site is  Korotych , Ukraine .
 
 
 The Commander in Chief - General of Army John Brown.
 
 
-Voucher №1
+Voucher№1
 Ordered to allocate 10000.56 kg of fuel for flight №1.
 
-The Commander in Chief - General of Army John Brown.
+The Commander in Chief
+General of Army John Brown

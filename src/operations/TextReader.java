@@ -13,7 +13,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,6 +57,29 @@ public class TextReader {
         return sb.toString();
     }
 
+    public static void main(String[] args) {
+        String txtFile = read("res/text/act.txt");
+        int numberFlight = methodSearhNumberFlightIntheText(txtFile, "order");
+        System.out.println("numberFlight = " +numberFlight);
+
+        String allText = txtFile.toLowerCase();
+        String textArray[] = allText.split(" ");
+        System.out.println(Arrays.toString(textArray));
+
+
+        int orderIndex = searchElementInArray(0, "order", textArray);
+        int orderIndexContatin = searchElementInArrayItem(0, "order", textArray);
+
+        System.out.println(orderIndex);
+        System.out.println(orderIndexContatin);
+
+        double quelityConsumption = methodSearchQuelityConsumption(txtFile);
+        System.out.println(quelityConsumption);
+
+
+        CheckTextFile.methodCheckModelRocket(txtFile);
+    }
+
     public  void runTextReader(String str) {
         String text = read(str);
 
@@ -66,23 +89,23 @@ public class TextReader {
         if(checkTextFile.indicatorAll){
             //1.Находим в списком экипажа по должностям
             ArrayList<CrewMember> members  = methodToolSearchWordsinTheText(text);
+            System.out.println(members);
             //2.Находим город запуска ракеты
             String cityBasetakeOff = methodSearchCityBaseInTheText(text);
+            System.out.println("cityBasetakeOff = " + cityBasetakeOff);
             //3.Находим номер полета и путевку
             int numberFlight = methodSearhNumberFlightIntheText(text, "order");
+            System.out.println("numberFlight = " +numberFlight);
             //int numberVoucher = methodSearhNumberFlightIntheText(text, "voucher");
 
             //4.Находим к-сть топлива
             double quelityConsumption = methodSearchQuelityConsumption(text);
+            System.out.println("quelityConsumption = " + quelityConsumption);
 
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
-            //TODO разобраться с simpleDateFormat коректная подача времени
-            Date now = new Date();
-            simpleDateFormat.format(now);
 
-
-
-            List<DateEvent> listEventDates = null;
+            List<DateEvent> listEventDates = new ArrayList<>();
+            listEventDates.add(new DateEvent(numberFlight, simpleDateFormat, String.valueOf(EventName.LAUNCH)));
 
             LauncherRocketModel launcherRocketModel = new LauncherRocketModel(numberFlight, cityBasetakeOff, null, simpleDateFormat,quelityConsumption, members, listEventDates);
 
@@ -120,13 +143,13 @@ public class TextReader {
         // 1)к-ство слов+
         // 2)к-ств предложений+
         // 3)к-ство абзацев+
-        // 4)Заголовки The order  и voucher,
-        // 5) предложения которые начинаються с ключевых слов.
+        // 4)Заголовки The order  и voucher,+
+        // 5) предложения которые начинаються с ключевых слов+.
         // 6) наличее модели ракеты 7. списка экипажа с номерами.
         // 8) число экипажа буквами
         // 9)место запуска
         // 10) должность и звание главнокомандуещеего
-        // 11) обьем выделенного горячего.
+        // 11) обьем выделенного горячего+.
         // 12) и полсе только ниже прописанная проверка с внесением данных в перемены и об'єкти.
 
 
@@ -262,34 +285,60 @@ public class TextReader {
     private static String methodSearchCityBaseInTheText(String str) {
         String allText = str.toLowerCase();
         String textArray[] = allText.split(" ");
+        System.out.println(Arrays.toString(textArray));
 
         int indexLaunch = searchElementInArray(0, "launch", textArray);
+
+
         String sentence = "";
 
+        if(indexLaunch != -1){
 
-        for(int i = indexLaunch; i < textArray.length; i++){
+            for(int i = indexLaunch; i < textArray.length; i++){
 
 
-            if(searchCharacterInStringIteration("\\.", textArray[i])){
-                sentence += textArray[i] + " ";
-                break;
-            }else {
-                sentence += textArray[i] + " ";
+                if(searchCharacterInStringIteration("\\.", textArray[i])){
+                    sentence += textArray[i] + " ";
+                    break;
+                }else {
+                    sentence += textArray[i] + " ";
+                }
+            }
+        }else {
+            indexLaunch = searchElementInArrayItem(0, "launch", textArray);
+            if (indexLaunch == -1){
+                JOptionPane.showMessageDialog(null, "The text wasn't written correctly!");
             }
         }
+
+
 
         return "Launch place: " + parseCityFromSentence(sentence) + " - " + parseCountryFromSentence(sentence);
     }
 
     //2.1 индекс слова "launch" в предложении где речь идет о метсе запуска
     //TODO другой алгоритм(более быстрый)
-    private static int searchElementInArray(int indexStart, String element, String[] arr){
-        int index = 0;
+    static int searchElementInArray(int indexStart, String element, String[] arr){
+        int index = -1;
 
         for(int i = indexStart; i < arr.length; i++){
 
             if(arr[i].equals(element)){
                 index = i;
+            }
+        }
+
+        return index;
+    }
+    //2.1 Если элемент массива содержит слово тогда возращает индекс, если нет -1
+     static int searchElementInArrayItem(int indexStart, String element, String[] arr){
+        int index = -1;
+
+        for(int i = indexStart; i < arr.length; i++){
+
+            if(arr[i].contains(element)){
+                index = i;
+                break;
             }
         }
 
@@ -339,6 +388,7 @@ public class TextReader {
     private static int methodSearhNumberFlightIntheText(String str, String caption) {
         int result = 0;
 
+
         String allText = str.toLowerCase();
         String textArray[] = allText.split(" ");
 
@@ -346,17 +396,39 @@ public class TextReader {
         Matcher matcher;
 
         int indexOrder = searchElementInArray(0,caption, textArray);
+        int indexOrderItem = searchElementInArrayItem(0,caption, textArray);
 
-        for(int i = indexOrder; i < textArray.length; i++){
-            matcher = pat.matcher(textArray[i]);
-            while (matcher.find()) {
-                result = Integer.parseInt(matcher.group());
-                break;
-            };
-            if(result != 0){
-                break;
-            }
-        }
+
+
+       if(indexOrder == -1){
+           if(indexOrderItem != -1 && indexOrderItem < 3){
+               for(int i = indexOrderItem; i < textArray.length; i++){
+                   matcher = pat.matcher(textArray[i]);
+                   while (matcher.find()) {
+                       result = Integer.parseInt(matcher.group());
+                       break;
+                   };
+                   if(result != 0){
+                       break;
+                   }
+               }
+           }else {
+               result = 0;
+               //System.out.println("error");
+           }
+       }else {
+           for(int i = indexOrder; i < textArray.length; i++){
+               matcher = pat.matcher(textArray[i]);
+               while (matcher.find()) {
+                   result = Integer.parseInt(matcher.group());
+                   break;
+               };
+               if(result != 0){
+                   break;
+               }
+           }
+       }
+
 
         return result;
     }
@@ -369,23 +441,34 @@ public class TextReader {
 
         Pattern pat = Pattern.compile("[-]?[0-9]+(.[0-9]+)?");
         Matcher matcher;
+        NumericClass numeric = new NumericClass();
 
-        int indexAllocate = searchElementInArray(searchElementInArray(0, "voucher", textArray),"allocate", textArray);
 
-        String sentence = "";
+        int voucherIndex = numeric.searchElement(0, "voucher", textArray);
 
-        for(int i = indexAllocate; i < textArray.length; i++){
-            if(!textArray[i].equals("kg")){
-                sentence += textArray[i];
-            }else {
-                break;
+
+
+        int indexAllocate = numeric.searchElement(voucherIndex,"allocate", textArray);
+
+        if(indexAllocate != -1){
+            String sentence = "";
+
+            for(int i = indexAllocate; i < textArray.length; i++){
+                if(!textArray[i].equals("kg")){
+                    sentence += textArray[i];
+                }else {
+                    break;
+                }
             }
+            matcher = pat.matcher(sentence);
+            while (matcher.find()) {
+                result = Double.parseDouble(matcher.group());
+                break;
+            };
         }
-        matcher = pat.matcher(sentence);
-        while (matcher.find()) {
-            result = Double.parseDouble(matcher.group());
-            break;
-        };
+
+
+
 
         return result;
     }
