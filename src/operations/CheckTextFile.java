@@ -13,6 +13,7 @@ public class CheckTextFile {
         methodCheckParagraghInText(textFile);
         methodCheckCaptions(textFile);
         methodCheckPresenceOfSentenceInTheText(textFile);
+        methodCheckModelRocket(textFile);
     }
 
 
@@ -160,8 +161,6 @@ public class CheckTextFile {
 
                     temp += textArray[j];
                     if (temp.contains(listConcreteSentence[i])) {
-                        //if(listConcreteSentence[i].equals(commanderInChief))
-                        System.out.println("Sentence № " + i + " has index " + j);
                         if (j == 0) isEmpty = false;
                         else isEmpty = true;
                         break;
@@ -189,8 +188,8 @@ public class CheckTextFile {
         return false;
     }
 
-    // 6 наличее модели ракеты
-     static void methodCheckModelRocket(String str) {
+    //6 наличее модели ракеты
+    void methodCheckModelRocket(String str) {
         String allText = str.toLowerCase();
         String textArray[] = allText.split(" ");
 
@@ -198,10 +197,8 @@ public class CheckTextFile {
 
         int indexNameModel = 0;
 
-
         for (String model : modelsRocket) {
             indexNameModel = TextReader.searchElementInArray(0, model, textArray);
-            System.out.println("1 Iteration" +indexNameModel);
             if(indexNameModel != -1) break;
         }
 
@@ -211,6 +208,7 @@ public class CheckTextFile {
                 if(indexNameModel != -1) break;
             }
             if (indexNameModel == -1){
+                indicatorAll = false;
                 JOptionPane.showMessageDialog(null, "There is'nt model of rocket!");
             }
         }else {
@@ -218,19 +216,24 @@ public class CheckTextFile {
             String textArrayUpperCase[] = str.split(" ");
             if(searchWordEqualsOrContains(textArrayUpperCase[indexNameModel - 1],"A") || searchWordEqualsOrContains(textArrayUpperCase[indexNameModel - 1],"The")){
 
-                if(findIntegerNumberToSymbol(indexNameModel, "rocket", textArray) != -1){
-                    System.out.println("ok");
+                if(findIntegerNumberToSymbol(indexNameModel, "rocket", textArray) != 0){
+                    //System.out.println("ok");
+                    indicatorAll = true;
                 }else {
+                    indicatorAll = false;
                     JOptionPane.showMessageDialog(null, "The model haven't number!");
                 }
             } else {
+                indicatorAll = false;
                 JOptionPane.showMessageDialog(null, "There is'nt article before model's name!");
             }
         }
-
-
     }
 
+    //7.списка экипажа с номерами.
+    void methodCheckListOfCrewMembers(String str){
+
+    }
 
     //вспомогательные методы
 
@@ -256,7 +259,7 @@ public class CheckTextFile {
     }
 
     //Наличение числа int. ищет до конкретного элемент
-    static int findIntegerNumberToSymbol(int index, String endStrLine, String textArray[]){
+    int findIntegerNumberToSymbol(int index, String endStrLine, String textArray[]){
         int result = 0;
         Pattern pat = Pattern.compile("[-]?[0-9]+(.[0-9]+)?");
         Matcher matcher;
@@ -264,17 +267,15 @@ public class CheckTextFile {
         String sentence = "";
 
         for(int i = index; i < textArray.length; i++){
-            if(!textArray[i].equals(endStrLine) || !textArray[i].contains(endStrLine)){
-                sentence += textArray[i];
-                //TODO не работает, не наъходить число
-                System.out.println("Index rocket" + i);
+            if(textArray[i].equals(endStrLine) || textArray[i].contains(endStrLine)){
                 break;
+            } else{
+                sentence += textArray[i];
             }
         }
         matcher = pat.matcher(sentence);
         while (matcher.find()) {
             result = Integer.parseInt(matcher.group());
-            System.out.println(" rocket" + result);
             break;
         };
 

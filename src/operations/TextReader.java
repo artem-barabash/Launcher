@@ -77,7 +77,7 @@ public class TextReader {
         System.out.println(quelityConsumption);
 
 
-        CheckTextFile.methodCheckModelRocket(txtFile);
+        //CheckTextFile.methodCheckModelRocket(txtFile);
     }
 
     public  void runTextReader(String str) {
@@ -145,7 +145,7 @@ public class TextReader {
         // 3)к-ство абзацев+
         // 4)Заголовки The order  и voucher,+
         // 5) предложения которые начинаються с ключевых слов+.
-        // 6) наличее модели ракеты 7. списка экипажа с номерами.
+        // 6) наличее модели ракеты+ 7. списка экипажа с номерами.
         // 8) число экипажа буквами
         // 9)место запуска
         // 10) должность и звание главнокомандуещеего
