@@ -59,7 +59,7 @@ public class TextReader {
 
     public static void main(String[] args) {
         String txtFile = read("res/text/act.txt");
-        int numberFlight = methodSearhNumberFlightIntheText(txtFile, "order");
+        /*int numberFlight = methodSearhNumberFlightIntheText(txtFile, "order");
         System.out.println("numberFlight = " +numberFlight);
 
         String allText = txtFile.toLowerCase();
@@ -74,10 +74,12 @@ public class TextReader {
         System.out.println(orderIndexContatin);
 
         double quelityConsumption = methodSearchQuelityConsumption(txtFile);
-        System.out.println(quelityConsumption);
+        System.out.println(quelityConsumption);*/
 
+        //CheckTextFile.methodCheckListOfCrewMembers(txtFile);
 
-        //CheckTextFile.methodCheckModelRocket(txtFile);
+        System.out.println(methodToolSearchWordsinTheText(txtFile).toString());
+
     }
 
     public  void runTextReader(String str) {
@@ -107,7 +109,7 @@ public class TextReader {
             List<DateEvent> listEventDates = new ArrayList<>();
             listEventDates.add(new DateEvent(numberFlight, simpleDateFormat, String.valueOf(EventName.LAUNCH)));
 
-            LauncherRocketModel launcherRocketModel = new LauncherRocketModel(numberFlight, cityBasetakeOff, null, simpleDateFormat,quelityConsumption, members, listEventDates);
+            LauncherRocketModel launcherRocketModel = new LauncherRocketModel(numberFlight, "falcon 9", cityBasetakeOff, null, simpleDateFormat,quelityConsumption, members, listEventDates);
 
             try {
                 app = new App(launcherRocketModel);
@@ -191,25 +193,31 @@ public class TextReader {
             }
             ++numberMember;
             list.add(searchDataPersonInSentance(numberMember, sentance));
+            System.out.println(numberMember  + " " + sentance);
+
+
 
             currentWordIndex = currentTextDoc.indexOf(position.toLowerCase(), indexWordStart + 1);
-
-
+            //если особ с конкретной должностью больше одного
             if(currentWordIndex != -1){
 
                 if(currentWordIndex < indexWordEnd){
-                    sentance = "";
-                    for (int j = currentWordIndex; j < strToCharArray.length; j++) {
-                        if (strToCharArray[j] != '.') {
-                            sentance += Character.toString(strToCharArray[j]);
 
-                        } else {
-                            break;
+                        sentance = "";
+                        for (int j = currentWordIndex; j < strToCharArray.length; j++) {
+                            if (strToCharArray[j] != '.') {
+                                sentance += Character.toString(strToCharArray[j]);
+                            } else {
+                                break;
+                            }
                         }
-                    }
-                    ++numberMember;
-                    list.add(searchDataPersonInSentance(numberMember,sentance));
+                        ++numberMember;
+                        list.add(searchDataPersonInSentance(numberMember,sentance));
+                        System.out.println(numberMember  + " " + sentance);
+
                 }
+
+
             }
         }
 
@@ -280,6 +288,8 @@ public class TextReader {
 
         return crewMemberSample;
     }
+
+    //1.5
 
     //2.Находим город запуска ракеты
     private static String methodSearchCityBaseInTheText(String str) {

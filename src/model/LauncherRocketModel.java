@@ -9,6 +9,7 @@ import java.util.Date;
 
 public class LauncherRocketModel {
     int numberFlight;//number flight
+    String modelRocket; //модель ракеты
     String cityBaseTakeOff;// место взлета
     CityBase cityBaseLandingSite; // место посадки
     SimpleDateFormat simpleDateFormat;// dd-mm-yyyy
@@ -21,8 +22,9 @@ public class LauncherRocketModel {
     //date need insert into sqlite!!!!
 
 
-    public LauncherRocketModel(int numberFlight, String cityBaseTakeOff, CityBase cityBaseLandingSite, SimpleDateFormat simpleDateFormat, double quelityConsumption, ArrayList<CrewMember> crewMembers, List<DateEvent> listEventDates) {
+    public LauncherRocketModel(int numberFlight, String modelRocket, String cityBaseTakeOff, CityBase cityBaseLandingSite, SimpleDateFormat simpleDateFormat, double quelityConsumption, ArrayList<CrewMember> crewMembers, List<DateEvent> listEventDates) {
         this.numberFlight = numberFlight;
+        this.modelRocket = modelRocket;
         this.cityBaseTakeOff = cityBaseTakeOff;
         this.cityBaseLandingSite = cityBaseLandingSite;
         this.simpleDateFormat = simpleDateFormat;
@@ -38,6 +40,15 @@ public class LauncherRocketModel {
 
     public void setNumberFlight(int numberFlight) {
         this.numberFlight = numberFlight;
+    }
+
+
+    public String getModelRocket() {
+        return modelRocket;
+    }
+
+    public void setModelRocket(String modelRocket) {
+        this.modelRocket = modelRocket;
     }
 
     public String getCityBaseTakeOff() {
@@ -93,6 +104,7 @@ public class LauncherRocketModel {
         Date date = new Date();
         return "LauncherRocketModel{" + "\n" +
                 "numberFlight=" + numberFlight + "\n" +
+                ", modelRocket=" + modelRocket + "\n" +
                 ", cityBaseTakeOff=" + cityBaseTakeOff + "\n" +
                 ", cityBaseLandingSite=" + cityBaseLandingSite +"\n" +
                 ", simpleDateFormat=" + simpleDateFormat.format(date) + "\n" +

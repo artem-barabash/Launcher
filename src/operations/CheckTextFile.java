@@ -231,8 +231,76 @@ public class CheckTextFile {
     }
 
     //7.списка экипажа с номерами.
-    void methodCheckListOfCrewMembers(String str){
+    static void methodCheckListOfCrewMembers(String str) {
+        String listCrewMembersPositions[] = {"Commander", "Engineer", "Gunner", "Doctor", "Tourist"};
+        int numberMember = 0;
 
+        char[] strToCharArray = str.toCharArray();
+        String currentTextDoc = str.toLowerCase();
+
+        int indexWordStart = 0;
+
+        int indexWordEnd = currentTextDoc.indexOf("The commander".toLowerCase());
+
+        for(String position : listCrewMembersPositions) {
+            int currentWordIndex = 0;
+
+            String sentance = "";
+
+
+            indexWordStart = currentTextDoc.indexOf(position.toLowerCase());
+
+            for (int j = indexWordStart; j < strToCharArray.length; j++) {
+                if (strToCharArray[j] != '.') {
+                    sentance += Character.toString(strToCharArray[j]);
+
+                } else {
+                    break;
+                }
+
+            }
+            ++numberMember;
+            System.out.println(numberMember + " " + sentance);
+
+
+            //currentWordIndex = currentTextDoc.indexOf(position.toLowerCase(), indexWordStart + 1);
+            currentWordIndex = currentTextDoc.indexOf(position.toLowerCase(), indexWordStart + 1);
+
+
+            //если особ с конкретной должностью больше одного
+            if (currentWordIndex != -1) {
+
+                if (currentWordIndex < indexWordEnd) {
+
+
+
+                        sentance = "";
+
+                        int startNextItemPosition = 0;
+                        for (int j = currentWordIndex; j < strToCharArray.length; j++) {
+                            if (strToCharArray[j] != '.') {
+                                sentance += Character.toString(strToCharArray[j]);
+                                startNextItemPosition = j;
+
+
+
+                            } else {
+                                break;
+                            }
+                        }
+
+                        ++numberMember;
+                        System.out.println(numberMember + " " + sentance);
+
+
+
+
+                }
+
+            }
+
+        }
+        System.out.println(numberMember);
     }
 
     //вспомогательные методы
