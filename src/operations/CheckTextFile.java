@@ -91,8 +91,6 @@ public class CheckTextFile {
 
         for (int i = 0; i < currentTextChar.length; i++) {
             if (currentTextChar[i] == '.' || currentTextChar[i] == ':') {
-
-
                 if (currentTextChar[i + 1] == '\n') {
                     countParagragh++;
                 }

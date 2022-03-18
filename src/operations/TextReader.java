@@ -1,6 +1,7 @@
 package operations;
 
 import gui_forms.App;
+import model.CrewMembersList;
 import model.DateEvent;
 import model.LauncherRocketModel;
 import model.crewmemebers.*;
@@ -22,6 +23,8 @@ public class TextReader {
 
     static App app;
     static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    static CrewMembersList members = new CrewMembersList();
+    static int numberMember = 0;
 
     //проверка текста на соотвествие правил оформления
     public  CheckTextFile checkTextFile;
@@ -57,7 +60,7 @@ public class TextReader {
         return sb.toString();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         String txtFile = read("res/text/act.txt");
         /*int numberFlight = methodSearhNumberFlightIntheText(txtFile, "order");
         System.out.println("numberFlight = " +numberFlight);
@@ -78,48 +81,50 @@ public class TextReader {
 
         //CheckTextFile.methodCheckListOfCrewMembers(txtFile);
 
-        System.out.println(methodToolSearchWordsinTheText(txtFile).toString());
+        methodToolSearchWordsinTheText(txtFile);
+        System.out.println(members);
+        System.out.println("members.checkIdeticalItemCrewMember() = " + members.checkIdeticalItemCrewMember());
+        System.out.println("members.checkListOfMemberAboutPositions() = " + members.checkListOfMemberAboutPositions());
 
     }
 
-    public  void runTextReader(String str) {
+    public  void runTextReader(String str) throws Exception {
         String text = read(str);
-
         checkTextFile = new CheckTextFile(text);
-
 
         if(checkTextFile.indicatorAll){
             //1.Находим в списком экипажа по должностям
-            ArrayList<CrewMember> members  = methodToolSearchWordsinTheText(text);
+            methodToolSearchWordsinTheText(text);
             System.out.println(members);
-            //2.Находим город запуска ракеты
-            String cityBasetakeOff = methodSearchCityBaseInTheText(text);
-            System.out.println("cityBasetakeOff = " + cityBasetakeOff);
-            //3.Находим номер полета и путевку
-            int numberFlight = methodSearhNumberFlightIntheText(text, "order");
-            System.out.println("numberFlight = " +numberFlight);
-            //int numberVoucher = methodSearhNumberFlightIntheText(text, "voucher");
+            if(members.checkIdeticalItemCrewMember() && members.checkListOfMemberAboutPositions() && members.makeNextOperations){
+                //2.Находим город запуска ракеты
+                String cityBasetakeOff = methodSearchCityBaseInTheText(text);
+                System.out.println("cityBasetakeOff = " + cityBasetakeOff);
+                //3.Находим номер полета и путевку
+                int numberFlight = methodSearhNumberFlightIntheText(text, "order");
+                System.out.println("numberFlight = " +numberFlight);
+                //int numberVoucher = methodSearhNumberFlightIntheText(text, "voucher");
 
-            //4.Находим к-сть топлива
-            double quelityConsumption = methodSearchQuelityConsumption(text);
-            System.out.println("quelityConsumption = " + quelityConsumption);
+                //4.Находим к-сть топлива
+                double quelityConsumption = methodSearchQuelityConsumption(text);
+                System.out.println("quelityConsumption = " + quelityConsumption);
 
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
 
-            List<DateEvent> listEventDates = new ArrayList<>();
-            listEventDates.add(new DateEvent(numberFlight, simpleDateFormat, String.valueOf(EventName.LAUNCH)));
+                List<DateEvent> listEventDates = new ArrayList<>();
+                listEventDates.add(new DateEvent(numberFlight, simpleDateFormat, String.valueOf(EventName.LAUNCH)));
 
-            LauncherRocketModel launcherRocketModel = new LauncherRocketModel(numberFlight, "falcon 9", cityBasetakeOff, null, simpleDateFormat,quelityConsumption, members, listEventDates);
+                LauncherRocketModel launcherRocketModel = new LauncherRocketModel(numberFlight, "falcon 9", cityBasetakeOff, null, simpleDateFormat,quelityConsumption, members, listEventDates);
 
-            try {
-                app = new App(launcherRocketModel);
-            } catch (IOException ex) {
-                ex.printStackTrace();
+                try {
+                    app = new App(launcherRocketModel);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                app.setSize(screenSize.width, screenSize.height);
+                app.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                app.setVisible(true);
             }
-            app.setSize(screenSize.width, screenSize.height);
-            app.setExtendedState(JFrame.MAXIMIZED_BOTH);
-            app.setVisible(true);
-
 
 
             //String [] array = str.split("");
@@ -138,8 +143,6 @@ public class TextReader {
             JOptionPane.showMessageDialog(null, "Data aren't correctly!");
         }
 
-
-
         //TODO  Проверка текстового файла на правильность составления: ключевые слова, абзацы
         //TODO
         // 1)к-ство слов+
@@ -153,79 +156,84 @@ public class TextReader {
         // 10) должность и звание главнокомандуещеего
         // 11) обьем выделенного горячего+.
         // 12) и полсе только ниже прописанная проверка с внесением данных в перемены и об'єкти.
-
-
-        //System.out.println(CheckTextFile.methodCheckCountWords(str));
-        //System.out.println(CheckTextFile.methodCheckCountSentences(str));
-
     }
 
     //1.Находим в списком экипажа по должностям
-    static ArrayList<CrewMember> methodToolSearchWordsinTheText(String text){
-
-        ArrayList<CrewMember> list = new ArrayList<>();
+    static void methodToolSearchWordsinTheText(String text) {
         String listCrewMembersPositions[] = {"Commander", "Engineer", "Gunner", "Doctor", "Tourist"};
-        int numberMember = 0;
+        //int numberMember = 0;
 
         char[] strToCharArray = text.toCharArray();
         String currentTextDoc = text.toLowerCase();
 
         int indexWordStart = 0;
 
-        int indexWordEnd = currentTextDoc.indexOf("The commander".toLowerCase());
+        int indexWordEnd = currentTextDoc.indexOf("The Launch".toLowerCase());
 
         for(String position : listCrewMembersPositions){
-            int currentWordIndex = 0;
-
             String sentance = "";
-
 
             indexWordStart = currentTextDoc.indexOf(position.toLowerCase());
 
-            for(int j = indexWordStart; j < strToCharArray.length; j++) {
-                if(strToCharArray[j] != '.'){
-                    sentance += Character.toString(strToCharArray[j]);
-
-                }else {
-                    break;
+            if(indexWordStart != -1) {
+                for (int j = indexWordStart; j < indexWordEnd; j++) {
+                    if(strToCharArray[j] != '.') sentance += Character.toString(strToCharArray[j]);
+                    else break;
                 }
+                ++numberMember;
+                members.add(searchDataPersonInSentance(numberMember, sentance));
+                System.out.println(numberMember + " " + sentance);
 
-            }
-            ++numberMember;
-            list.add(searchDataPersonInSentance(numberMember, sentance));
-            System.out.println(numberMember  + " " + sentance);
-
-
-
-            currentWordIndex = currentTextDoc.indexOf(position.toLowerCase(), indexWordStart + 1);
-            //если особ с конкретной должностью больше одного
-            if(currentWordIndex != -1){
-
-                if(currentWordIndex < indexWordEnd){
-
-                        sentance = "";
-                        for (int j = currentWordIndex; j < strToCharArray.length; j++) {
-                            if (strToCharArray[j] != '.') {
-                                sentance += Character.toString(strToCharArray[j]);
-                            } else {
-                                break;
-                            }
-                        }
-                        ++numberMember;
-                        list.add(searchDataPersonInSentance(numberMember,sentance));
-                        System.out.println(numberMember  + " " + sentance);
-
-                }
-
-
+                methodForAddOtherSimilarCrewMember(indexWordStart, indexWordEnd, position, strToCharArray, currentTextDoc);
+            }else {
+                JOptionPane.showMessageDialog(null,"There have'nt " + position + " in the list.");
+                //Предотвращает вход на запуск с негативной проверкой
+                members.makeNextOperations = false;
+                break;
             }
         }
-
-        return list;
     }
+    //1.
+    private static void methodForAddOtherSimilarCrewMember(int indexWordStart, int indexWordEnd, String position, char[] strToCharArray, String currentTextDoc) {
+        String sentance = "";
+        int i = 0;
+        //берем индекс первого элемента с текущей должностью
+        int indexPreviousWord = indexWordStart;
+        //номер члена экипажа
+
+        //проходим циклом до конца, то есть The Commander
+        while(i < indexWordEnd){
+            //добавляем 1 к индексу предыдущего, чтобы найти еще одного члена, с такой же должностью
+            int currentWordIndex = currentTextDoc.indexOf(position.toLowerCase(), indexPreviousWord + 1);
+
+            if(currentWordIndex != -1){
+                if(currentWordIndex < indexWordEnd){
+                    sentance = "";
+                    //strToCharArray.length
+                    for (int j = currentWordIndex; j < indexWordEnd; j++) {
+                        if (strToCharArray[j] != '.') {
+                            sentance += Character.toString(strToCharArray[j]);
+                            //присваеваим индекс найденой строки с особой и должность.
+                            // Когда это значение возвращается в начала получает + 1.
+                            // И происходить дальнейший поиск подобных элементов
+                            indexPreviousWord = j;
+                        } else {
+                            break;
+                        }
+                    }
+                    numberMember++;
+                    members.add(searchDataPersonInSentance(numberMember,sentance));
+                    System.out.println(numberMember  + " " + sentance);
+                }
+
+            }else break;
+
+            i++;
+        }
+    }
+
     //1.1. Создание обьекта на основе полученных данных
     private static CrewMember searchDataPersonInSentance(int numberMember, String textSentence){
-
         String arrayPerson[] = textSentence.split(" ");
         String position = arrayPerson[0];
         String name = "";
@@ -476,10 +484,6 @@ public class TextReader {
                 break;
             };
         }
-
-
-
-
         return result;
     }
 }

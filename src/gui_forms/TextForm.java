@@ -17,7 +17,6 @@ public class TextForm extends JFrame {
     private JButton cancelButton;
     private JLabel resultLabel;
 
-
     public TextForm(){
         super("Launcher");
         this.setContentPane(this.panelMain);
@@ -39,7 +38,11 @@ public class TextForm extends JFrame {
                     resultLabel.setText(chooser.getSelectedFile().getAbsolutePath());
                     TextReader textReader = new TextReader();
 
-                    textReader.runTextReader(chooser.getSelectedFile().getAbsolutePath());
+                    try {
+                        textReader.runTextReader(chooser.getSelectedFile().getAbsolutePath());
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
 
                     textForm.dispose();
 
@@ -58,11 +61,8 @@ public class TextForm extends JFrame {
         });
     }
 
-
-
     public static void main(String[] args) {
         textForm.setSize(700, 700);
-
         //fixed sizes
         textForm.setResizable(false);
         textForm.setVisible(true);
