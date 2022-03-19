@@ -7,12 +7,13 @@ import java.util.ArrayList;
 
 public class CrewMembersList extends ArrayList<CrewMember> {
     //Предотвращает вход на запуск с негативной проверкой
-    public boolean makeNextOperations;
+    public boolean makeNextOperations = true;
 
     public CrewMembersList(){
         super();
     }
 
+    //7.списка экипажа с номерами.
     public  boolean checkIdeticalItemCrewMember(){
         boolean isEmpty = false;
         for(CrewMember crewMember : this){

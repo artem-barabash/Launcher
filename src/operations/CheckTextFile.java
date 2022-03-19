@@ -50,19 +50,15 @@ public class CheckTextFile {
         int currentIndexChar = 0;
 
         for (int i = 0; i < currentTextChar.length; i++) {
-
             matcher = pat.matcher(String.valueOf(currentTextChar[i]));
-
 
             if (matcher.find()) {
                 if (currentTextChar[i + 1] == '.') {
                     countSentence--;
                     currentIndexChar = i + 1;
                 }
-
                 if (currentTextChar[currentIndexChar + 1] == '\n') {
                     countSentence++;
-
                 }
                 currentIndexChar = 0;
 
@@ -73,12 +69,7 @@ public class CheckTextFile {
             }
         }
 
-
-        //System.out.println(Arrays.toString(currentTextChar));
-        //System.out.println("Count sentence = " + countSentence);
-
         indicatorAll = countSentence >= 12 && countSentence <= 17 ? true : false;
-
         if (!indicatorAll) {
             JOptionPane.showMessageDialog(null, "The text must have at least 12 sentences! You have to put dots in sentences.");
         }
@@ -145,7 +136,7 @@ public class CheckTextFile {
         String[] listConcreteSentence = {
                 "rocket with a satellite on board is headed for a space expedition",
                 "The satellite will conduct scientific, economic,\n", "and military work",
-                "The satellite is accompanied by a crew of eight people:",
+                "The satellite is accompanied by a crew of",
                 "The Launch  site is", "The Commander in Chief - ", "Ordered to allocate",
                 "of fuel for flight №", "The Commander in Chief\n"
         };
@@ -177,11 +168,8 @@ public class CheckTextFile {
     //5.1 Проверка наличия приделожений
     private boolean methodCheckSentence(String str, String[] listConcreteSentence) {
         for (int i = 0; i < listConcreteSentence.length; i++) {
-            if (str.contains(listConcreteSentence[i])) {
-                return true;
-            } else {
-                break;
-            }
+            if (str.contains(listConcreteSentence[i])) return true;
+             else break;
         }
         return false;
     }
@@ -228,77 +216,28 @@ public class CheckTextFile {
         }
     }
 
-    //7.списка экипажа с номерами.
-    static void methodCheckListOfCrewMembers(String str) {
-        String listCrewMembersPositions[] = {"Commander", "Engineer", "Gunner", "Doctor", "Tourist"};
-        int numberMember = 0;
+    // 8) число экипажа буквами
+    static boolean methodFindQuantityPersons(String str){
+        String allText = str.toLowerCase();
+        String textArray[] = allText.split(" ");
+        NumericClass numericClass = new NumericClass();
 
-        char[] strToCharArray = str.toCharArray();
-        String currentTextDoc = str.toLowerCase();
+        int indexWordPeople = numericClass.searchElement(0, "people", textArray);
 
-        int indexWordStart = 0;
+        String number = textArray[indexWordPeople - 1];
 
-        int indexWordEnd = currentTextDoc.indexOf("The commander".toLowerCase());
+        String nameNumbers[] = {"zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"};
+        int numberFromList = 0;
 
-        for(String position : listCrewMembersPositions) {
-            int currentWordIndex = 0;
-
-            String sentance = "";
-
-
-            indexWordStart = currentTextDoc.indexOf(position.toLowerCase());
-
-            for (int j = indexWordStart; j < strToCharArray.length; j++) {
-                if (strToCharArray[j] != '.') {
-                    sentance += Character.toString(strToCharArray[j]);
-
-                } else {
-                    break;
-                }
-
-            }
-            ++numberMember;
-            System.out.println(numberMember + " " + sentance);
-
-
-            //currentWordIndex = currentTextDoc.indexOf(position.toLowerCase(), indexWordStart + 1);
-            currentWordIndex = currentTextDoc.indexOf(position.toLowerCase(), indexWordStart + 1);
-
-
-            //если особ с конкретной должностью больше одного
-            if (currentWordIndex != -1) {
-
-                if (currentWordIndex < indexWordEnd) {
-
-
-
-                        sentance = "";
-
-                        int startNextItemPosition = 0;
-                        for (int j = currentWordIndex; j < strToCharArray.length; j++) {
-                            if (strToCharArray[j] != '.') {
-                                sentance += Character.toString(strToCharArray[j]);
-                                startNextItemPosition = j;
-
-
-
-                            } else {
-                                break;
-                            }
-                        }
-
-                        ++numberMember;
-                        System.out.println(numberMember + " " + sentance);
-
-
-
-
-                }
-
-            }
-
+        for(int i = 0; i < nameNumbers.length; i++){
+            if(nameNumbers[i].equals(number)) numberFromList = i;
         }
-        System.out.println(numberMember);
+
+        //сравниваем к-сть экипажа с числом в тексте + ищем : возле слова people
+        if((TextReader.numberMember == numberFromList) && (searchCharacterInStringIteration(":", textArray[indexWordPeople]) || searchCharacterInStringIteration( ":", textArray[indexWordPeople + 1]))) return true;
+        else JOptionPane.showMessageDialog(null, "The quanlity of crew was availabled no correctly!");
+
+        return false;
     }
 
     //вспомогательные методы
@@ -373,14 +312,20 @@ public class CheckTextFile {
     }
 
     private static boolean searchWordEqualsOrContains(String line, String element){
-         if(line.equals(element)){
-             return true;
-         }else if(line.contains(element)){
-             return true;
-        }
+         if(line.equals(element)) return true;
+         else if(line.contains(element)) return true;
+
         return false;
     }
 
+    //2.2 Поиск конкретного символа в строке
+    private static boolean searchCharacterInStringIteration(String regex, String str){
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(str);
+        boolean result = matcher.find();
+
+        return result;
+    }
 
     static int parseIntegerFromText(String text){
         StringBuffer num = new StringBuffer();

@@ -86,6 +86,8 @@ public class TextReader {
         System.out.println("members.checkIdeticalItemCrewMember() = " + members.checkIdeticalItemCrewMember());
         System.out.println("members.checkListOfMemberAboutPositions() = " + members.checkListOfMemberAboutPositions());
 
+        CheckTextFile.methodFindQuantityPersons(txtFile);
+
     }
 
     public  void runTextReader(String str) throws Exception {
@@ -96,7 +98,8 @@ public class TextReader {
             //1.Находим в списком экипажа по должностям
             methodToolSearchWordsinTheText(text);
             System.out.println(members);
-            if(members.checkIdeticalItemCrewMember() && members.checkListOfMemberAboutPositions() && members.makeNextOperations){
+            if(members.checkIdeticalItemCrewMember() && members.checkListOfMemberAboutPositions()  && members.makeNextOperations && CheckTextFile.methodFindQuantityPersons(text)){
+
                 //2.Находим город запуска ракеты
                 String cityBasetakeOff = methodSearchCityBaseInTheText(text);
                 System.out.println("cityBasetakeOff = " + cityBasetakeOff);
@@ -150,7 +153,7 @@ public class TextReader {
         // 3)к-ство абзацев+
         // 4)Заголовки The order  и voucher,+
         // 5) предложения которые начинаються с ключевых слов+.
-        // 6) наличее модели ракеты+ 7. списка экипажа с номерами.
+        // 6) наличее модели ракеты+ 7. списка экипажа с номерами.+-
         // 8) число экипажа буквами
         // 9)место запуска
         // 10) должность и звание главнокомандуещеего
@@ -159,9 +162,8 @@ public class TextReader {
     }
 
     //1.Находим в списком экипажа по должностям
-    static void methodToolSearchWordsinTheText(String text) {
+    static void methodToolSearchWordsinTheText(String text) throws Exception {
         String listCrewMembersPositions[] = {"Commander", "Engineer", "Gunner", "Doctor", "Tourist"};
-        //int numberMember = 0;
 
         char[] strToCharArray = text.toCharArray();
         String currentTextDoc = text.toLowerCase();
@@ -193,8 +195,9 @@ public class TextReader {
             }
         }
     }
-    //1.
-    private static void methodForAddOtherSimilarCrewMember(int indexWordStart, int indexWordEnd, String position, char[] strToCharArray, String currentTextDoc) {
+
+    //1.1 Если должность n, не у одного члена экипажа.
+    private static void methodForAddOtherSimilarCrewMember(int indexWordStart, int indexWordEnd, String position, char[] strToCharArray, String currentTextDoc) throws Exception {
         String sentance = "";
         int i = 0;
         //берем индекс первого элемента с текущей должностью
@@ -209,7 +212,7 @@ public class TextReader {
             if(currentWordIndex != -1){
                 if(currentWordIndex < indexWordEnd){
                     sentance = "";
-                    //strToCharArray.length
+
                     for (int j = currentWordIndex; j < indexWordEnd; j++) {
                         if (strToCharArray[j] != '.') {
                             sentance += Character.toString(strToCharArray[j]);
@@ -225,15 +228,14 @@ public class TextReader {
                     members.add(searchDataPersonInSentance(numberMember,sentance));
                     System.out.println(numberMember  + " " + sentance);
                 }
-
             }else break;
 
             i++;
         }
     }
 
-    //1.1. Создание обьекта на основе полученных данных
-    private static CrewMember searchDataPersonInSentance(int numberMember, String textSentence){
+    //1.2. Создание обьекта на основе полученных данных
+    private static CrewMember searchDataPersonInSentance(int numberMember, String textSentence) throws Exception{
         String arrayPerson[] = textSentence.split(" ");
         String position = arrayPerson[0];
         String name = "";
@@ -253,7 +255,7 @@ public class TextReader {
         return member;
     }
 
-    //1.2 Проверка на наличение символа
+    //1.3 Проверка на наличение символа
     private static boolean methodCheckTextСharacters(String s) {
         String specialCharactersString = "!@#$%&*()'+,-./:;<=>?[]^_`{|}";
         boolean result = false;
@@ -270,7 +272,7 @@ public class TextReader {
         return result;
     }
 
-    //1.3 Проверка на наличие букв в элементе
+    //1.4 Проверка на наличие букв в элементе
     private static boolean methodCheckTextStrings(String s) {
         Pattern pattern = Pattern.compile("[a-zA-Z]");
         Matcher matcher = pattern.matcher(s);
@@ -279,7 +281,7 @@ public class TextReader {
         return result;
     }
 
-    //1.4 присваеваем данные обьекту, с созданием экземпляра класса взависимости от должности
+    //1.5 присваеваем данные обьекту, с созданием экземпляра класса взависимости от должности
     static CrewMember createMemberForHisActivity(CrewMember crewMemberSample){
 
         if(crewMemberSample.getPosition() == "Commander"){
@@ -297,7 +299,7 @@ public class TextReader {
         return crewMemberSample;
     }
 
-    //1.5
+
 
     //2.Находим город запуска ракеты
     private static String methodSearchCityBaseInTheText(String str) {
@@ -307,14 +309,10 @@ public class TextReader {
 
         int indexLaunch = searchElementInArray(0, "launch", textArray);
 
-
         String sentence = "";
 
         if(indexLaunch != -1){
-
             for(int i = indexLaunch; i < textArray.length; i++){
-
-
                 if(searchCharacterInStringIteration("\\.", textArray[i])){
                     sentence += textArray[i] + " ";
                     break;
@@ -329,8 +327,6 @@ public class TextReader {
             }
         }
 
-
-
         return "Launch place: " + parseCityFromSentence(sentence) + " - " + parseCountryFromSentence(sentence);
     }
 
@@ -340,10 +336,7 @@ public class TextReader {
         int index = -1;
 
         for(int i = indexStart; i < arr.length; i++){
-
-            if(arr[i].equals(element)){
-                index = i;
-            }
+            if(arr[i].equals(element)) index = i;
         }
 
         return index;
@@ -416,8 +409,6 @@ public class TextReader {
         int indexOrder = searchElementInArray(0,caption, textArray);
         int indexOrderItem = searchElementInArrayItem(0,caption, textArray);
 
-
-
        if(indexOrder == -1){
            if(indexOrderItem != -1 && indexOrderItem < 3){
                for(int i = indexOrderItem; i < textArray.length; i++){
@@ -446,7 +437,6 @@ public class TextReader {
                }
            }
        }
-
 
         return result;
     }
