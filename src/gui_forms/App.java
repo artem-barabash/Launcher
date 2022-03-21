@@ -1,6 +1,6 @@
 package gui_forms;
 
-import model.CityBase;
+import model.CityBaseLandingSite;
 import model.DataFlight;
 import model.LauncherRocketModel;
 import operations.ChangeOperationOnMonitor;
@@ -141,14 +141,14 @@ public class App extends JFrame {
                 if (App.run == true) {
                     JOptionPane.showMessageDialog(null, "We need firstly stop rocket!");
                 } else {
-                    CityBase cityBase = LandingCrewAndMachine.searchCityForLanding();
+                    CityBaseLandingSite cityBaseLandingSite = LandingCrewAndMachine.searchCityForLanding();
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
                     }
-                    JOptionPane.showMessageDialog(null, cityBase.toString());
-                    new ReturnOnEarthThread(App.distance, cityBase);
+                    JOptionPane.showMessageDialog(null, cityBaseLandingSite.toString());
+                    new ReturnOnEarthThread(App.distance, cityBaseLandingSite);
 
                 }
             }

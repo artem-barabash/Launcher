@@ -14,7 +14,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -86,7 +85,7 @@ public class TextReader {
         System.out.println("members.checkIdeticalItemCrewMember() = " + members.checkIdeticalItemCrewMember());
         System.out.println("members.checkListOfMemberAboutPositions() = " + members.checkListOfMemberAboutPositions());
 
-        CheckTextFile.methodFindQuantityPersons(txtFile);
+        //CheckTextFile.methodCheckCityBaseInTheText(txtFile);
 
     }
 
@@ -154,8 +153,8 @@ public class TextReader {
         // 4)Заголовки The order  и voucher,+
         // 5) предложения которые начинаються с ключевых слов+.
         // 6) наличее модели ракеты+ 7. списка экипажа с номерами.+-
-        // 8) число экипажа буквами
-        // 9)место запуска
+        // 8) число экипажа буквами+
+        // 9)место запуска+
         // 10) должность и звание главнокомандуещеего
         // 11) обьем выделенного горячего+.
         // 12) и полсе только ниже прописанная проверка с внесением данных в перемены и об'єкти.
@@ -172,27 +171,33 @@ public class TextReader {
 
         int indexWordEnd = currentTextDoc.indexOf("The Launch".toLowerCase());
 
-        for(String position : listCrewMembersPositions){
-            String sentance = "";
+        System.out.println("indexWordEnd = " + indexWordEnd);
 
-            indexWordStart = currentTextDoc.indexOf(position.toLowerCase());
+        if(indexWordEnd != -1) {
+            for (String position : listCrewMembersPositions) {
+                String sentance = "";
 
-            if(indexWordStart != -1) {
-                for (int j = indexWordStart; j < indexWordEnd; j++) {
-                    if(strToCharArray[j] != '.') sentance += Character.toString(strToCharArray[j]);
-                    else break;
+                indexWordStart = currentTextDoc.indexOf(position.toLowerCase());
+
+                if (indexWordStart != -1) {
+                    for (int j = indexWordStart; j < indexWordEnd; j++) {
+                        if (strToCharArray[j] != '.') sentance += Character.toString(strToCharArray[j]);
+                        else break;
+                    }
+                    ++numberMember;
+                    members.add(searchDataPersonInSentance(numberMember, sentance));
+                    //System.out.println(numberMember + " " + sentance);
+
+                    methodForAddOtherSimilarCrewMember(indexWordStart, indexWordEnd, position, strToCharArray, currentTextDoc);
+                } else {
+                    JOptionPane.showMessageDialog(null, "There have'nt " + position + " in the list.");
+                    //Предотвращает вход на запуск с негативной проверкой
+                    members.makeNextOperations = false;
+                    break;
                 }
-                ++numberMember;
-                members.add(searchDataPersonInSentance(numberMember, sentance));
-                System.out.println(numberMember + " " + sentance);
-
-                methodForAddOtherSimilarCrewMember(indexWordStart, indexWordEnd, position, strToCharArray, currentTextDoc);
-            }else {
-                JOptionPane.showMessageDialog(null,"There have'nt " + position + " in the list.");
-                //Предотвращает вход на запуск с негативной проверкой
-                members.makeNextOperations = false;
-                break;
             }
+        }else {
+            JOptionPane.showMessageDialog(null, "There must be sentance: 'The Launch  site is...' in the text. ");
         }
     }
 
@@ -226,7 +231,7 @@ public class TextReader {
                     }
                     numberMember++;
                     members.add(searchDataPersonInSentance(numberMember,sentance));
-                    System.out.println(numberMember  + " " + sentance);
+                    //System.out.println(numberMember  + " " + sentance);
                 }
             }else break;
 
@@ -256,7 +261,7 @@ public class TextReader {
     }
 
     //1.3 Проверка на наличение символа
-    private static boolean methodCheckTextСharacters(String s) {
+     static boolean methodCheckTextСharacters(String s) {
         String specialCharactersString = "!@#$%&*()'+,-./:;<=>?[]^_`{|}";
         boolean result = false;
 
@@ -273,7 +278,7 @@ public class TextReader {
     }
 
     //1.4 Проверка на наличие букв в элементе
-    private static boolean methodCheckTextStrings(String s) {
+    static boolean methodCheckTextStrings(String s) {
         Pattern pattern = Pattern.compile("[a-zA-Z]");
         Matcher matcher = pattern.matcher(s);
         boolean result = matcher.find();
@@ -305,7 +310,7 @@ public class TextReader {
     private static String methodSearchCityBaseInTheText(String str) {
         String allText = str.toLowerCase();
         String textArray[] = allText.split(" ");
-        System.out.println(Arrays.toString(textArray));
+        //System.out.println(Arrays.toString(textArray));
 
         int indexLaunch = searchElementInArray(0, "launch", textArray);
 
@@ -326,7 +331,7 @@ public class TextReader {
                 JOptionPane.showMessageDialog(null, "The text wasn't written correctly!");
             }
         }
-
+        //В БД нужно добавить отдельно город и отдельно страну
         return "Launch place: " + parseCityFromSentence(sentence) + " - " + parseCountryFromSentence(sentence);
     }
 
@@ -366,39 +371,49 @@ public class TextReader {
     }
 
     //2.3 Взять город из розпарсенной строки
-    private static String parseCityFromSentence(String sentence) {
-        int  startCity = sentence.indexOf("is");
+    static String parseCityFromSentence(String sentence) {
+        int startCity = sentence.indexOf("is");
         int endCityComma = sentence.indexOf(",");
 
-        StringBuilder stringBuilder = new StringBuilder(sentence);
+        if(startCity != -1 && endCityComma != -1){
+            StringBuilder stringBuilder = new StringBuilder(sentence);
 
-        StringBuilder currentResult = new StringBuilder(stringBuilder.substring(startCity, endCityComma));
-        currentResult.delete(0, 2);
+            StringBuilder currentResult = new StringBuilder(stringBuilder.substring(startCity, endCityComma));
+            currentResult.delete(0, 2);
 
-        String result = new String(currentResult).trim();
+            String result = new String(currentResult).trim();
 
-        return result.substring(0, 1).toUpperCase() +   result.substring(1);
+            return result.substring(0, 1).toUpperCase() +   result.substring(1);
+        }else {
+            JOptionPane.showMessageDialog(null, "Please, enter the launch city correctly!");
+            return null;
+        }
     }
 
     //2.4 Взять страну из розпарсенной строки
-    private static String parseCountryFromSentence(String sentence) {
+    static String parseCountryFromSentence(String sentence) {
         int startCountry = sentence.indexOf(",");
         int endCountryStopPoint = sentence.indexOf(".");
 
-        StringBuilder stringBuilder = new StringBuilder(sentence);
-        StringBuilder currentBuilder = new StringBuilder(stringBuilder.substring(startCountry, endCountryStopPoint));
+        if(startCountry != -1 && endCountryStopPoint != -1){
+            StringBuilder stringBuilder = new StringBuilder(sentence);
+            StringBuilder currentBuilder = new StringBuilder(stringBuilder.substring(startCountry, endCountryStopPoint));
 
-        currentBuilder.delete(0, 2);
+            currentBuilder.delete(0, 2);
 
-        String result = new String(currentBuilder).trim();
+            String result = new String(currentBuilder).trim();
 
-        return result.substring(0, 1).toUpperCase() + result.substring(1);
+            return result.substring(0, 1).toUpperCase() + result.substring(1);
+        }else {
+            JOptionPane.showMessageDialog(null, "Please, enter the launch city correctly!");
+            return null;
+        }
+
     }
 
     //3.Находим номер полета и номер путевки
     private static int methodSearhNumberFlightIntheText(String str, String caption) {
         int result = 0;
-
 
         String allText = str.toLowerCase();
         String textArray[] = allText.split(" ");
@@ -417,9 +432,7 @@ public class TextReader {
                        result = Integer.parseInt(matcher.group());
                        break;
                    };
-                   if(result != 0){
-                       break;
-                   }
+                   if(result != 0) break;
                }
            }else {
                result = 0;
@@ -432,9 +445,7 @@ public class TextReader {
                    result = Integer.parseInt(matcher.group());
                    break;
                };
-               if(result != 0){
-                   break;
-               }
+               if(result != 0) break;
            }
        }
 
@@ -451,11 +462,7 @@ public class TextReader {
         Matcher matcher;
         NumericClass numeric = new NumericClass();
 
-
         int voucherIndex = numeric.searchElement(0, "voucher", textArray);
-
-
-
         int indexAllocate = numeric.searchElement(voucherIndex,"allocate", textArray);
 
         if(indexAllocate != -1){

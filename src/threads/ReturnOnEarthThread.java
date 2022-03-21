@@ -1,7 +1,7 @@
 package threads;
 
 import gui_forms.App;
-import model.CityBase;
+import model.CityBaseLandingSite;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -12,9 +12,9 @@ public class ReturnOnEarthThread implements Runnable{
     Thread t;
 
     double distance;
-    CityBase base;
+    CityBaseLandingSite base;
 
-    public ReturnOnEarthThread(double distanceToEarth, CityBase baseOnEarth){
+    public ReturnOnEarthThread(double distanceToEarth, CityBaseLandingSite baseOnEarth){
         t = new Thread(this, "tugboat");
 
         distance = distanceToEarth;

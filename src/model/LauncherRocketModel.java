@@ -11,7 +11,7 @@ public class LauncherRocketModel {
     int numberFlight;//number flight
     String modelRocket; //модель ракеты
     String cityBaseTakeOff;// место взлета
-    CityBase cityBaseLandingSite; // место посадки
+    CityBaseLandingSite cityBaseLandingSite; // место посадки
     SimpleDateFormat simpleDateFormat;// dd-mm-yyyy
 
     double quelityConsumption; //к-ство топлива
@@ -22,7 +22,7 @@ public class LauncherRocketModel {
     //date need insert into sqlite!!!!
 
 
-    public LauncherRocketModel(int numberFlight, String modelRocket, String cityBaseTakeOff, CityBase cityBaseLandingSite, SimpleDateFormat simpleDateFormat, double quelityConsumption, ArrayList<CrewMember> crewMembers, List<DateEvent> listEventDates) {
+    public LauncherRocketModel(int numberFlight, String modelRocket, String cityBaseTakeOff, CityBaseLandingSite cityBaseLandingSite, SimpleDateFormat simpleDateFormat, double quelityConsumption, ArrayList<CrewMember> crewMembers, List<DateEvent> listEventDates) {
         this.numberFlight = numberFlight;
         this.modelRocket = modelRocket;
         this.cityBaseTakeOff = cityBaseTakeOff;
@@ -59,11 +59,11 @@ public class LauncherRocketModel {
         this.cityBaseTakeOff = cityBaseTakeOff;
     }
 
-    public CityBase getCityBaseLandingSite() {
+    public CityBaseLandingSite getCityBaseLandingSite() {
         return cityBaseLandingSite;
     }
 
-    public void setCityBaseLandingSite(CityBase cityBaseLandingSite) {
+    public void setCityBaseLandingSite(CityBaseLandingSite cityBaseLandingSite) {
         this.cityBaseLandingSite = cityBaseLandingSite;
     }
 

@@ -1,4 +1,4 @@
-import model.CityBase;
+import model.CityBaseLandingSite;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,7 +26,7 @@ public class Test {
         System.out.println("-------------------------");
         //method();
         method1();
-        CityBase cityBase = new CityBase("Lviv", "Ukraine", true);
+        CityBaseLandingSite cityBase = new CityBaseLandingSite("Lviv", "Ukraine", true);
 
 
         System.out.println(cityBase.hashCode());

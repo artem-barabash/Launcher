@@ -1,5 +1,7 @@
 package operations;
 
+import model.CityBase;
+
 import javax.swing.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,6 +16,8 @@ public class CheckTextFile {
         methodCheckCaptions(textFile);
         methodCheckPresenceOfSentenceInTheText(textFile);
         methodCheckModelRocket(textFile);
+        methodCheckCityBaseInTheText(textFile);
+        checkPositionAndGradeOfCommanderChief(textFile);
     }
 
 
@@ -149,6 +153,7 @@ public class CheckTextFile {
                 for (int j = 0; j < textArray.length; j++) {
 
                     temp += textArray[j];
+                    //если отрезки пределожений з массива соовпадают в именно заданной последовательности в listConcreteSentence
                     if (temp.contains(listConcreteSentence[i])) {
                         if (j == 0) isEmpty = false;
                         else isEmpty = true;
@@ -239,6 +244,149 @@ public class CheckTextFile {
 
         return false;
     }
+
+    // 9)место запуска
+    void methodCheckCityBaseInTheText(String str) {
+        String allText = str.toLowerCase();
+        String textArray[] = allText.split(" ");
+
+        NumericClass numericClass = new NumericClass();
+
+        int indexLaunch = numericClass.searchElement(0, "launch", textArray);
+
+        String sentence = "";
+
+        if (indexLaunch != -1) {
+            for (int i = indexLaunch; i < textArray.length; i++) {
+                if (searchCharacterInStringIteration("\\.", textArray[i])) {
+                    sentence += textArray[i] + " ";
+                    break;
+                } else sentence += textArray[i] + " ";
+            }
+        } else{
+            JOptionPane.showMessageDialog(null, "The text wasn't written correctly!");
+        }
+
+        String parseCity = TextReader.parseCityFromSentence(sentence);
+        String parseCountry = TextReader.parseCountryFromSentence(sentence);
+
+        if(parseCity!= null &&  parseCountry!= null){
+             if(methodCheckBaseForLaunch(parseCity, parseCountry)){ indicatorAll = true;}
+             else {
+                 indicatorAll = false;
+                JOptionPane.showMessageDialog(null, "Please, enter the launch city correctly!\n" +
+                        "The list of spaceports:\n"+
+                        "Korotych - Ukraine;\n"+ "Paris - France;\n"+
+                       "New York - USA;\n" + "Rio de Janeiro - Brazil;\n");
+             }
+        }else indicatorAll = false;
+    }
+
+    //9.1 проверка города, на соответсвие с зарегистрированными базами
+    static boolean methodCheckBaseForLaunch(String city, String country){
+        CityBase citiesBaseArray [] = {
+                new CityBase("Korotych", "Ukraine"), new CityBase("Paris", "France"),
+                new CityBase("New York", "USA"), new CityBase("Rio de Janeiro", "Brazil")
+        };
+
+        for(CityBase currentCityBase : citiesBaseArray) {
+            if(currentCityBase.city.equals(city) && currentCityBase.country.equals(country)) return true;
+        }
+
+        return false;
+    }
+
+    // 10) должность и звание главнокомандуещеего
+     void checkPositionAndGradeOfCommanderChief(String str){
+        String textArray[] = str.split("");
+
+        String titlesForPositionCommander[] = {"The Commander in Chief - ", "The Commander in Chief\n"};
+        String temp = "";
+        boolean isEmpty = false;
+
+        String tempArrayWithTitlesbyCommader[] = new String[titlesForPositionCommander.length];
+        //проверка на наличие предложение в тексте
+        if(methodCheckSentence(str, titlesForPositionCommander)){
+
+            for (int i = 0; i < titlesForPositionCommander.length; i++) {
+                for (int j = 0; j < textArray.length; j++) {
+                    //перебираем текст в виде массива
+                    temp += textArray[j];
+
+                    if (temp.contains(titlesForPositionCommander[i])) {
+                        //находим, в элементы текста в заданной последовательности массива titlesForPositionCommander
+                        if (j == 0) isEmpty = false;
+                        else isEmpty = true;
+                        //методы parseDataPositionFromString и returnSentenceWithCommander парсят строку
+                        // от индекса j до точки, далее текст розпарсенный обрабатуется данними методами
+                        tempArrayWithTitlesbyCommader[i] = parseDataPositionFromString(returnSentenceWithCommander(str,j));
+                        break;
+                    }
+                }
+            }
+            // сравниваем два полученных элемента
+            isEmpty = tempArrayWithTitlesbyCommader[0].equals(tempArrayWithTitlesbyCommader[1]);
+
+        }else {
+            JOptionPane.showMessageDialog(null, "The order must include the title, name, and surname of the commander-in-chief!");
+        }
+
+        indicatorAll = isEmpty;
+        if(!indicatorAll) JOptionPane.showMessageDialog(null, "The position of commander is not correct.");
+    }
+
+    //10.1
+    private String returnSentenceWithCommander(String tempText, int indexFromFirstArray){
+        String sentence = "";
+        char[] strToCharArray = tempText.toCharArray();
+
+        for(int i = indexFromFirstArray; i < strToCharArray.length; i++){
+            // собираем до точки
+            if(strToCharArray[i] != '.') sentence += strToCharArray[i];
+            else break;
+        }
+
+        return sentence;
+    }
+
+    //10.2
+    private String parseDataPositionFromString(String sentence){
+        // звание которое может быть у главнокомандуещего
+        String namePositions[] = {"General of Army", "Сolonel of Aviation"};
+        String currentDegree = null;
+        String first_name = "";
+        String last_name = "";
+
+        for(String degree : namePositions){
+            //проверяем на наличение
+            if(searchWordEqualsOrContains(sentence, degree)) currentDegree = degree;
+        }
+        if(currentDegree != null){
+            StringBuffer sb = new StringBuffer(sentence);
+            //через stringbuffer взяли только часть преложения с именем и фамилией
+            String nameAndSurname = sb.substring(currentDegree.length() + 1);
+
+            String [] name = nameAndSurname.trim().split(" ");
+
+            //парсим из предложения имя и фамилию
+            int index = 0;
+            for(int i = 0; i < name.length; i++){
+                if(!TextReader.methodCheckTextСharacters(name[index]) && TextReader.methodCheckTextStrings(name[index])){
+                    first_name = name[index];
+                }else {
+                    first_name = name[++index];
+                }
+            }
+            last_name = name[index + 1];
+        } else {
+            JOptionPane.showMessageDialog(null, "The position of commander is not correct.");
+        }
+
+
+        //отдаем обратно для сравнения
+        return "first_name:" + first_name + ", last_name:" + last_name + ", position: " + currentDegree;
+    }
+
 
     //вспомогательные методы
 

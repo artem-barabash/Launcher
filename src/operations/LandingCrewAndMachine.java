@@ -1,6 +1,6 @@
 package operations;
 
-import model.CityBase;
+import model.CityBaseLandingSite;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -12,29 +12,20 @@ public class LandingCrewAndMachine {
     public static Random random = new Random();
 
     
-    public static CityBase searchCityForLanding() {
-        List<CityBase> cityBases = new ArrayList<CityBase>();
-        CityBase base = null;
+    public static CityBaseLandingSite searchCityForLanding() {
+        List<CityBaseLandingSite> cityBases = new ArrayList<CityBaseLandingSite>();
+        CityBaseLandingSite base = null;
 
-        ArrayList<CityBase> currentArray = new ArrayList<CityBase>();// change this arrayList to dinamic massive. And study to make dinamic massive myself
+        ArrayList<CityBaseLandingSite> currentArray = new ArrayList<CityBaseLandingSite>();// change this arrayList to dinamic massive. And study to make dinamic massive myself
 
-        cityBases.add(new CityBase("Kharkov", "Ukraine", possible()));
-        cityBases.add(new CityBase("Paris", "France", possible()));
-        cityBases.add(new CityBase("New York", "USA", possible()));
-        cityBases.add(new CityBase("Rio de Janeiro", "Brazil", possible()));
+        cityBases.add(new CityBaseLandingSite("Kharkov", "Ukraine", possible()));
+        cityBases.add(new CityBaseLandingSite("Paris", "France", possible()));
+        cityBases.add(new CityBaseLandingSite("New York", "USA", possible()));
+        cityBases.add(new CityBaseLandingSite("Rio de Janeiro", "Brazil", possible()));
 
-        //System.out.println(cityBases.toString().);
-
-        //System.out.println("-----");
-
-
-        for (CityBase possible : cityBases) {
-
-            if (possible.possibleLanding == true) {
-                currentArray.add(possible);
-            }
+        for (CityBaseLandingSite possible : cityBases) {
+            if (possible.possibleLanding == true) currentArray.add(possible);
         }
-
 
         if(currentArray != null){
             //TODO Exception in thread "AWT-EventQueue-0" java.lang.IllegalArgumentException проблема при выборе города
