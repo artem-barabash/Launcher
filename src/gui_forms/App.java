@@ -34,7 +34,6 @@ public class App extends JFrame {
 
     public final static double fuelConsumption = 50; //100 за cекунду RP-1  одного мотора
 
-
     public final static double speed = 3.95; // скорость за секунду одного мотора
 
     public static double distance = 0;
@@ -64,6 +63,8 @@ public class App extends JFrame {
 
     private JPanel consolePanel;
     private JPanel tablePanel;
+    private JTextArea textAreaCommander;
+    private JButton buttonCommander;
 
     static ArrayList<String> listIterations;
     static DefaultListModel listModel;
@@ -72,7 +73,10 @@ public class App extends JFrame {
 
 
     //Один раз включил(запустил)
-    private boolean launchfact = false;
+    private boolean launchFact = false;
+
+    //один раз включил возврат на Землю
+    private boolean returnFact = false;
 
     LauncherRocketModel launcherRocketModel;
 
@@ -103,17 +107,17 @@ public class App extends JFrame {
         launchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(launchfact == false){
+                if(launchFact == false){
                     if (App.run == false) {
                         App.run = true;
-                        launchfact = true;
+                        launchFact = true;
                         new LaunchThread();
                     } else {
                         JOptionPane.showMessageDialog(null, "The rocket has launched already!");
                     }
-                } else {
-                    JOptionPane.showMessageDialog(null, "You can't launch rocket now! You are at space already.");
                 }
+                //else JOptionPane.showMessageDialog(null, "You can't launch rocket now! You are at space already.");
+
 
             }
         });
@@ -122,15 +126,19 @@ public class App extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (App.run == false) {
-                    JOptionPane.showMessageDialog(null, "The rocket hasn't lanched yet.");
-                } else {
-                    App.run = false;
-                    try {
-                        changePictureForFlight("satellite.jpg");
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
+                    if(launchFact == false){
+                        JOptionPane.showMessageDialog(null, "The rocket hasn't lanched yet.");
                     }
-                    showDataFlight();
+                } else {
+                    if(returnFact == false){
+                        App.run = false;
+                        try {
+                            changePictureForFlight("satellite.jpg");
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                        showDataFlight();
+                    }
 
                 }
             }
@@ -138,19 +146,35 @@ public class App extends JFrame {
         leaveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (App.run == true) {
-                    JOptionPane.showMessageDialog(null, "We need firstly stop rocket!");
-                } else {
-                    CityBaseLandingSite cityBaseLandingSite = LandingCrewAndMachine.searchCityForLanding();
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
-                    JOptionPane.showMessageDialog(null, cityBaseLandingSite.toString());
-                    new ReturnOnEarthThread(App.distance, cityBaseLandingSite);
+                if(launchFact == true){
+                    if (App.run == true){
+                        if(returnFact) JOptionPane.showMessageDialog(null, "We are returning to the Earth now!");
+                        else JOptionPane.showMessageDialog(null, "We need firstly stop rocket!");
 
+                    } else {
+                        if(returnFact == false){
+                            returnFact = true;
+                            CityBaseLandingSite cityBaseLandingSite = LandingCrewAndMachine.searchCityForLanding();
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException ex) {
+                                ex.printStackTrace();
+                            }
+                            JOptionPane.showMessageDialog(null, cityBaseLandingSite.toString());
+                            new ReturnOnEarthThread(App.distance, cityBaseLandingSite);
+                        }
+                    }
+                }else {
+                    JOptionPane.showMessageDialog(null, "This function isn't available now!!");
                 }
+
+            }
+        });
+        buttonCommander.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(textAreaCommander.getText() != ""){}
+                //TODO сделоть сообщения от командира станции в реальном режиме
             }
         });
 
