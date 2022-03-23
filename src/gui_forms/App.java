@@ -29,7 +29,7 @@ public class App extends JFrame {
 
     static App app;
 
-    public static double quelityConsumption = 5000;//количество топлива RP-1
+    public static double quelityConsumption = 5000;//количество топлива RP-1 на один мотор
     public static boolean run = false;
 
     public final static double fuelConsumption = 50; //100 за cекунду RP-1  одного мотора
@@ -40,6 +40,7 @@ public class App extends JFrame {
 
     public static double currentDistance;
     public static double currentQuelityConsumption;
+
     private  ChangeOperationOnMonitor changeOperationOnMonitor = new ChangeOperationOnMonitor();
 
     private Video video = new Video();
@@ -65,6 +66,7 @@ public class App extends JFrame {
     private JPanel tablePanel;
     private JTextArea textAreaCommander;
     private JButton buttonCommander;
+    public   JScrollPane scrollPane;
 
     static ArrayList<String> listIterations;
     static DefaultListModel listModel;
@@ -175,32 +177,62 @@ public class App extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if(textAreaCommander.getText() != ""){}
                 //TODO сделоть сообщения от командира станции в реальном режиме
+                Date now = new Date();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
+                addItem(simpleDateFormat.format(now) + " " + textAreaCommander.getText());
+                textAreaCommander.setText("");
             }
         });
 
     }
 
     public static void addItem(String it) {
-        //добавляет в коллекцию JList
         listIterations.add(it);
 
+        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void> () {
+            @Override
+            protected Void doInBackground() throws Exception {
+
+                listModel.clear();
+                for(String s : listIterations) {
+                    listModel.addElement(s);
+                }
+                return null;
+            }
+        };
+
+        java.awt.EventQueue.invokeLater(worker);
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                listModel.clear();
+                for(String s : listIterations) {
+                    listModel.addElement(s);
+                }
+            }
+        });
+    }
+
+
+
+
+    /*public static void addItem(String it) {
+        //добавляет в коллекцию JList
+        listIterations.add(it);
         //метод для обновления списка
         refreshItemsListABC();
 
-
-        //System.out.println("listIterations.size = " + listIterations.size() + ", listModel.size = " + listModel.size());
     }
 
     public static void refreshItemsListABC() {
         //удаляет все из списка
         listModel.removeAllElements();
-        //listModel.clear();
 
         for (String s : listIterations) {
             //выводит обновленный список, с попередньо добавленыйм элементом
             listModel.addElement(s);
         }
-    }
+    }*/
 
     public  JLabel showRocketFirstly() throws IOException {
         BufferedImage backgroundImage = ImageIO.read(new File("res/image/rocket.jpg"));

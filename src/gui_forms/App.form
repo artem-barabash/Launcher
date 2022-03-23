@@ -137,7 +137,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <scrollpane id="9bf43">
+              <scrollpane id="9bf43" binding="scrollPane">
                 <constraints border-constraint="Center"/>
                 <properties/>
                 <border type="none"/>

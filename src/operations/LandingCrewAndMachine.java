@@ -3,48 +3,40 @@ package operations;
 import model.CityBaseLandingSite;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class LandingCrewAndMachine {
-
     public static Random random = new Random();
-
     
     public static CityBaseLandingSite searchCityForLanding() {
-        List<CityBaseLandingSite> cityBases = new ArrayList<CityBaseLandingSite>();
-        CityBaseLandingSite base = null;
+        CityBaseLandingSite [] cityBaseLandingSites  = {new CityBaseLandingSite("Kharkov", "Ukraine", random.nextBoolean()),
+                new CityBaseLandingSite("Paris", "France", random.nextBoolean()),
+                new CityBaseLandingSite("New York", "USA", random.nextBoolean()),
+                new CityBaseLandingSite("Rio de Janeiro", "Brazil", random.nextBoolean())
+        };
 
-        ArrayList<CityBaseLandingSite> currentArray = new ArrayList<CityBaseLandingSite>();// change this arrayList to dinamic massive. And study to make dinamic massive myself
+        CityBaseLandingSite currentCityBase = null;
 
-        cityBases.add(new CityBaseLandingSite("Kharkov", "Ukraine", possible()));
-        cityBases.add(new CityBaseLandingSite("Paris", "France", possible()));
-        cityBases.add(new CityBaseLandingSite("New York", "USA", possible()));
-        cityBases.add(new CityBaseLandingSite("Rio de Janeiro", "Brazil", possible()));
-
-        for (CityBaseLandingSite possible : cityBases) {
-            if (possible.possibleLanding == true) currentArray.add(possible);
+        int countTrueCities = 0;
+        for(CityBaseLandingSite cityBase: cityBaseLandingSites){
+            if(cityBase.possibleLanding) countTrueCities++;
         }
 
-        if(currentArray != null){
-            //TODO Exception in thread "AWT-EventQueue-0" java.lang.IllegalArgumentException проблема при выборе города
-            base = currentArray.get(random.nextInt(currentArray.size()));
-        }
-        else {
-            JOptionPane.showMessageDialog(null, "All the places for landing are busy.");
-        }
+        if(countTrueCities != 0){
+            CityBaseLandingSite [] arrayWithTrueCities = new CityBaseLandingSite[countTrueCities];
 
-        return base;
+            for(int i = 0; i < arrayWithTrueCities.length; i++){
+                for(int j = 0; j < cityBaseLandingSites.length; j++){
+                    if(cityBaseLandingSites[j].possibleLanding) arrayWithTrueCities[i] = cityBaseLandingSites[j];
+                }
+
+            }
+            currentCityBase = arrayWithTrueCities[random.nextInt(arrayWithTrueCities.length)];
+
+        }else JOptionPane.showMessageDialog(null, "The all of cities cannot receive accept the ship with crew!");
+
+        return currentCityBase;
     }
-
     //need to create objects form enum
-
-
-    private static boolean possible() {
-
-        return random.nextBoolean();
-    }
-
 }
 
