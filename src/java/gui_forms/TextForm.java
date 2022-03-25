@@ -1,0 +1,101 @@
+package gui_forms;
+
+import operations.TextReader;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Scanner;
+
+public class TextForm extends JFrame {
+
+    static TextForm textForm;
+
+
+    private JPanel panelMain;
+    private JTextArea textArea;
+    private JButton enterButton;
+    private JButton cancelButton;
+    private JLabel resultLabel;
+
+    public TextForm() throws IOException {
+        super("Launcher");
+        this.setContentPane(this.panelMain);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.pack();
+
+        //textArea.setText(TextReader.read("res/text/example-act.txt"));
+
+
+        enterButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser chooser = new JFileChooser();
+                FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                        "TEXT FILES", "txt", "text");
+                chooser.setFileFilter(filter);
+                int returnVal = chooser.showOpenDialog(textForm);
+                if(returnVal == JFileChooser.APPROVE_OPTION) {
+                    //System.out.println("You chose to open this file: " +chooser.getSelectedFile().getName());
+                    resultLabel.setText(chooser.getSelectedFile().getAbsolutePath());
+                    TextReader textReader = new TextReader();
+
+                    try {
+                        textReader.runTextReader(chooser.getSelectedFile().getAbsolutePath());
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+
+                    textForm.dispose();
+
+                }else {
+                    JOptionPane.showMessageDialog(null, "Please, choose file.");
+                }
+
+            }
+        });
+
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                textForm.dispatchEvent(new WindowEvent(textForm, WindowEvent.WINDOW_CLOSING));
+            }
+        });
+    }
+
+    private String  showExampleTextFromResource(String nameTextFile) throws IOException {
+        File file = new File(this.getClass().getClassLoader().getResource(nameTextFile).getPath());
+        String line = "";
+
+        try{
+            Scanner scanner = new Scanner(file);
+
+            while (scanner.hasNext()){
+               line += scanner.nextLine() + "\n";
+            }
+        }catch (FileNotFoundException e){
+            e.printStackTrace();
+        }
+        return line;
+    }
+
+    public static void main(String[] args) throws IOException {
+
+
+        textForm = new TextForm();
+
+        textForm.setSize(700, 700);
+        //fixed sizes
+        textForm.setResizable(false);
+        textForm.setVisible(true);
+
+        //TODO 1.не отображеатся тектс в jar файл 2. Проверка тестового файла не корректная 3. не оставливаеться когда нужно
+
+        textForm.textArea.setText(textForm.showExampleTextFromResource("text/example-act.txt"));
+    }
+}
