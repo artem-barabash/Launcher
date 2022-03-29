@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
 
 public class CheckTextFile {
     boolean indicatorAll = false;
+    String modelRocket = null;
+    static CityBase base = null;
 
     public CheckTextFile(String textFile) {
         methodCheckCountWords(textFile);
@@ -16,7 +18,7 @@ public class CheckTextFile {
         methodCheckCaptions(textFile);
         methodCheckPresenceOfSentenceInTheText(textFile);
         methodCheckModelRocket(textFile);
-        methodCheckCityBaseInTheText(textFile);
+        //methodCheckCityBaseInTheText(textFile);
         checkPositionAndGradeOfCommanderChief(textFile);
     }
 
@@ -103,7 +105,7 @@ public class CheckTextFile {
     void methodCheckCaptions(String str) {
         String allText = str.toLowerCase();
         String textArray[] = allText.split(" ");
-        NumericClass numericClass = new NumericClass();
+        operations.NumericClass numericClass = new operations.NumericClass();
 
         boolean resultCheck = false;
 
@@ -189,13 +191,13 @@ public class CheckTextFile {
         int indexNameModel = 0;
 
         for (String model : modelsRocket) {
-            indexNameModel = TextReader.searchElementInArray(0, model, textArray);
+            indexNameModel = operations.TextReader.searchElementInArray(0, model, textArray);
             if(indexNameModel != -1) break;
         }
 
         if(indexNameModel == -1){
             for (String model : modelsRocket) {
-                indexNameModel = TextReader.searchElementInArrayItem(0, model, textArray);
+                indexNameModel = operations.TextReader.searchElementInArrayItem(0, model, textArray);
                 if(indexNameModel != -1) break;
             }
             if (indexNameModel == -1){
@@ -206,9 +208,10 @@ public class CheckTextFile {
             //массив чтобы понять исходный регистр букв, если a/the, с мальнькой буквы тогда error
             String textArrayUpperCase[] = str.split(" ");
             if(searchWordEqualsOrContains(textArrayUpperCase[indexNameModel - 1],"A") || searchWordEqualsOrContains(textArrayUpperCase[indexNameModel - 1],"The")){
+                int numberModel = findIntegerNumberToSymbol(indexNameModel, "rocket", textArray);
 
-                if(findIntegerNumberToSymbol(indexNameModel, "rocket", textArray) != 0){
-                    //System.out.println("ok");
+                if(numberModel != 0){
+                    modelRocket = textArrayUpperCase[indexNameModel] + " " + numberModel;
                     indicatorAll = true;
                 }else {
                     indicatorAll = false;
@@ -225,7 +228,7 @@ public class CheckTextFile {
     static boolean methodFindQuantityPersons(String str){
         String allText = str.toLowerCase();
         String textArray[] = allText.split(" ");
-        NumericClass numericClass = new NumericClass();
+        operations.NumericClass numericClass = new operations.NumericClass();
 
         int indexWordPeople = numericClass.searchElement(0, "people", textArray);
 
@@ -239,18 +242,19 @@ public class CheckTextFile {
         }
 
         //сравниваем к-сть экипажа с числом в тексте + ищем : возле слова people
-        if((TextReader.numberMember == numberFromList) && (searchCharacterInStringIteration(":", textArray[indexWordPeople]) || searchCharacterInStringIteration( ":", textArray[indexWordPeople + 1]))) return true;
+        if((operations.TextReader.numberMember == numberFromList) && (searchCharacterInStringIteration(":", textArray[indexWordPeople]) || searchCharacterInStringIteration( ":", textArray[indexWordPeople + 1]))) return true;
         else JOptionPane.showMessageDialog(null, "The quanlity of crew was availabled no correctly!");
 
         return false;
     }
 
     // 9)место запуска
-    void methodCheckCityBaseInTheText(String str) {
+    static boolean methodCheckCityBaseInTheText(String str) {
         String allText = str.toLowerCase();
         String textArray[] = allText.split(" ");
+        boolean isCorrectly = false;
 
-        NumericClass numericClass = new NumericClass();
+        operations.NumericClass numericClass = new operations.NumericClass();
 
         int indexLaunch = numericClass.searchElement(0, "launch", textArray);
 
@@ -267,23 +271,24 @@ public class CheckTextFile {
             JOptionPane.showMessageDialog(null, "The text wasn't written correctly!");
         }
 
-        String parseCity = TextReader.parseCityFromSentence(sentence);
-        String parseCountry = TextReader.parseCountryFromSentence(sentence);
-
+        String parseCity = operations.TextReader.parseCityFromSentence(sentence);
+        String parseCountry = operations.TextReader.parseCountryFromSentence(sentence);
+        System.out.println("methodCheckBaseForLaunch = " + methodCheckBaseForLaunch(parseCity, parseCountry));
         if(parseCity!= null &&  parseCountry!= null){
-             if(methodCheckBaseForLaunch(parseCity, parseCountry)){ indicatorAll = true;}
-             else {
-                 indicatorAll = false;
-                JOptionPane.showMessageDialog(null, "Please, enter the launch city correctly!\n" +
-                        "The list of spaceports:\n"+
-                        "Korotych - Ukraine;\n"+ "Paris - France;\n"+
-                       "New York - USA;\n" + "Rio de Janeiro - Brazil;\n");
-             }
-        }else indicatorAll = false;
+            isCorrectly = methodCheckBaseForLaunch(parseCity, parseCountry);
+
+            if(isCorrectly) base = new CityBase(parseCity, parseCountry);
+            else JOptionPane.showMessageDialog(null, "Please, enter the launch city correctly!\n" +
+                    "The list of spaceports:\n"+
+                    "Korotych - Ukraine;\n"+ "Paris - France;\n"+
+                    "New York - USA;\n" + "Rio de Janeiro - Brazil;\n");
+        }
+
+        return isCorrectly;
     }
 
     //9.1 проверка города, на соответсвие с зарегистрированными базами
-    static boolean methodCheckBaseForLaunch(String city, String country){
+     static boolean methodCheckBaseForLaunch(String city, String country){
         CityBase citiesBaseArray [] = {
                 new CityBase("Korotych", "Ukraine"), new CityBase("Paris", "France"),
                 new CityBase("New York", "USA"), new CityBase("Rio de Janeiro", "Brazil")
@@ -291,6 +296,7 @@ public class CheckTextFile {
 
         for(CityBase currentCityBase : citiesBaseArray) {
             if(currentCityBase.city.equals(city) && currentCityBase.country.equals(country)) return true;
+
         }
 
         return false;
@@ -371,7 +377,7 @@ public class CheckTextFile {
             //парсим из предложения имя и фамилию
             int index = 0;
             for(int i = 0; i < name.length; i++){
-                if(!TextReader.methodCheckTextСharacters(name[index]) && TextReader.methodCheckTextStrings(name[index])){
+                if(!operations.TextReader.methodCheckTextСharacters(name[index]) && operations.TextReader.methodCheckTextStrings(name[index])){
                     first_name = name[index];
                 }else {
                     first_name = name[++index];

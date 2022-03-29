@@ -12,12 +12,14 @@ public class ReturnOnEarthThread implements Runnable{
     Thread t;
 
     double distance;
+    double quelityConsumption;
     CityBaseLandingSite base;
 
-    public ReturnOnEarthThread(double distanceToEarth, CityBaseLandingSite baseOnEarth){
+    public ReturnOnEarthThread(double distanceToEarth, double quelityConsumptionToEarth, CityBaseLandingSite baseOnEarth){
         t = new Thread(this, "tugboat");
 
         distance = distanceToEarth;
+        quelityConsumption = quelityConsumptionToEarth;
         base = baseOnEarth;
 
         t.start();
@@ -38,7 +40,7 @@ public class ReturnOnEarthThread implements Runnable{
         while (App.run) {
 
             distance -= App.speed;
-            App.quelityConsumption -= App.fuelConsumption;
+            quelityConsumption -= App.fuelConsumption;
 
 
             if(distance <= 15){
@@ -51,7 +53,7 @@ public class ReturnOnEarthThread implements Runnable{
                 break;
             }
 
-            App.addItem(simpleDateFormat.format(now)+  " - The tugboat has flied " + String.format("%.2f",distance ) +  " km. already.\nThe fuel left " +  String.format("%.2f", App.quelityConsumption) + " kg. yet.");
+            App.addItem(simpleDateFormat.format(now)+  " - The tugboat has flied " + String.format("%.2f",distance ) +  " km. already.\nThe fuel left " +  String.format("%.2f", quelityConsumption) + " kg. yet.");
 
             try {
                 Thread.sleep(500);
@@ -75,7 +77,7 @@ public class ReturnOnEarthThread implements Runnable{
 
             while (distance > 3.95){
                 distance -= App.speed;
-                App.addItem(simpleDateFormat.format(now)+  " - The parachute has flied " + String.format("%.2f",distance ) +  " km. already.\nThe fuel left " +  String.format("%.2f", App.quelityConsumption) + " kg. yet.");
+                App.addItem(simpleDateFormat.format(now)+  " - The parachute has flied " + String.format("%.2f",distance ) +  " km. already.\nThe fuel left " +  String.format("%.2f", quelityConsumption) + " kg. yet.");
             }
 
             JOptionPane.showMessageDialog(null, "The machine landed.");

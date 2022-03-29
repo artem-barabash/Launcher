@@ -17,9 +17,11 @@ public class MotorThread extends Thread{
     @Override
     public void run() {
 
+
         while (App.run) {
                 App.distance += App.speed;
                 App.quelityConsumption -= App.fuelConsumption;
+
 
                 queue.add(new DataFlight(App.distance, App.quelityConsumption));
 

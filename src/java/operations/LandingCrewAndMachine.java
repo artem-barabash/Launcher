@@ -38,10 +38,6 @@ public class LandingCrewAndMachine {
         return currentCityBase;
     }
 
-    public static void main(String[] args) {
-        CityBaseLandingSite cityBaseLandingSite =searchCityForLanding();
-        System.out.println(cityBaseLandingSite.toString());
-    }
     //need to create objects form enum
 }
 

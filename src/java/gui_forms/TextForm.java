@@ -7,10 +7,12 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Scanner;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.stream.Stream;
 
 public class TextForm extends JFrame {
 
@@ -68,20 +70,20 @@ public class TextForm extends JFrame {
         });
     }
 
-    private String  showExampleTextFromResource(String nameTextFile) throws IOException {
-        File file = new File(this.getClass().getClassLoader().getResource(nameTextFile).getPath());
-        String line = "";
+    public String  showExampleTextFromResource(String nameTextFile) throws IOException {
+        StringBuilder resultSB = new StringBuilder();
 
-        try{
-            Scanner scanner = new Scanner(file);
-
-            while (scanner.hasNext()){
-               line += scanner.nextLine() + "\n";
-            }
-        }catch (FileNotFoundException e){
-            e.printStackTrace();
+        try (
+                InputStream inputStream = TextForm.class.getResourceAsStream(nameTextFile);
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                Stream<String> lines = bufferedReader.lines();
+        ) {
+            lines.forEach(x -> resultSB.append(x + "\n"));
         }
-        return line;
+
+
+        return resultSB.toString();
     }
 
     public static void main(String[] args) throws IOException {
@@ -94,8 +96,8 @@ public class TextForm extends JFrame {
         textForm.setResizable(false);
         textForm.setVisible(true);
 
-        //TODO 1.не отображеатся тектс в jar файл 2. Проверка тестового файла не корректная 3. не оставливаеться когда нужно
+        //TODO 2. Проверка тестового файла не корректная
 
-        textForm.textArea.setText(textForm.showExampleTextFromResource("text/example-act.txt"));
+        textForm.textArea.setText(textForm.showExampleTextFromResource("/text/example-act.txt"));
     }
 }

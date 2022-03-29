@@ -27,6 +27,7 @@ public class TextReader {
 
     //проверка текста на соотвествие правил оформления
     public  CheckTextFile checkTextFile;
+    DBHadler dbHadler = new DBHadler();
 
 
     public TextReader() {
@@ -58,35 +59,6 @@ public class TextReader {
         }
         return sb.toString();
     }
-
-    /*public static void main(String[] args) throws Exception {
-        String txtFile = read("res/text/act.txt");
-        /*int numberFlight = methodSearhNumberFlightIntheText(txtFile, "order");
-        System.out.println("numberFlight = " +numberFlight);
-
-        String allText = txtFile.toLowerCase();
-        String textArray[] = allText.split(" ");
-        System.out.println(Arrays.toString(textArray));
-
-
-        int orderIndex = searchElementInArray(0, "order", textArray);
-        int orderIndexContatin = searchElementInArrayItem(0, "order", textArray);
-
-        System.out.println(orderIndex);
-        System.out.println(orderIndexContatin);
-
-        double quelityConsumption = methodSearchQuelityConsumption(txtFile);
-        System.out.println(quelityConsumption);
-
-
-        methodToolSearchWordsinTheText(txtFile);
-        System.out.println(members);
-        System.out.println("members.checkIdeticalItemCrewMember() = " + members.checkIdeticalItemCrewMember());
-        System.out.println("members.checkListOfMemberAboutPositions() = " + members.checkListOfMemberAboutPositions());
-
-
-    }*/
-
     public  void runTextReader(String str) throws Exception {
         String text = read(str);
         checkTextFile = new CheckTextFile(text);
@@ -94,36 +66,44 @@ public class TextReader {
         if(checkTextFile.indicatorAll){
             //1.Находим в списком экипажа по должностям
             methodToolSearchWordsinTheText(text);
-            System.out.println(members);
-            if(members.checkIdeticalItemCrewMember() && members.checkListOfMemberAboutPositions()  && members.makeNextOperations && CheckTextFile.methodFindQuantityPersons(text)){
-
-                //2.Находим город запуска ракеты
-                String cityBasetakeOff = methodSearchCityBaseInTheText(text);
-                System.out.println("cityBasetakeOff = " + cityBasetakeOff);
+            System.out.println(members.size());
+            if(members.checkIdeticalItemCrewMember() && members.checkListOfMemberAboutPositions()
+                    && members.makeNextOperations && CheckTextFile.methodFindQuantityPersons(text) && CheckTextFile.methodCheckCityBaseInTheText(text)){
                 //3.Находим номер полета и путевку
                 int numberFlight = methodSearhNumberFlightIntheText(text, "order");
-                System.out.println("numberFlight = " +numberFlight);
-                //int numberVoucher = methodSearhNumberFlightIntheText(text, "voucher");
 
-                //4.Находим к-сть топлива
-                double quelityConsumption = methodSearchQuelityConsumption(text);
-                System.out.println("quelityConsumption = " + quelityConsumption);
+                if(dbHadler.methodCheckFlightInDB(numberFlight)){
+                    //просмотр номера по базе
+                    JOptionPane.showMessageDialog(null, "This order's number was in base!");
+                }else{
+                    //2.Находим город запуска ракеты
+                    String cityBasetakeOff = methodSearchCityBaseInTheText(text);
+                    System.out.println("cityBasetakeOff = " + cityBasetakeOff);
 
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
+                    System.out.println("numberFlight = " +numberFlight);
+                    //int numberVoucher = methodSearhNumberFlightIntheText(text, "voucher");
 
-                List<DateEvent> listEventDates = new ArrayList<>();
-                listEventDates.add(new DateEvent(numberFlight, simpleDateFormat, String.valueOf(EventName.LAUNCH)));
+                    //4.Находим к-сть топлива
+                    double quelityConsumption = methodSearchQuelityConsumption(text);
+                    System.out.println("quelityConsumption = " + quelityConsumption);
 
-                LauncherRocketModel launcherRocketModel = new LauncherRocketModel(numberFlight, "falcon 9", cityBasetakeOff, null, simpleDateFormat,quelityConsumption, members, listEventDates);
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
 
-                try {
-                    app = new App(launcherRocketModel);
-                } catch (IOException ex) {
-                    ex.printStackTrace();
+                    List<DateEvent> listEventDates = new ArrayList<>();
+                    listEventDates.add(new DateEvent(numberFlight, simpleDateFormat, String.valueOf(EventName.LAUNCH)));
+
+                    LauncherRocketModel launcherRocketModel = new LauncherRocketModel(numberFlight, checkTextFile.modelRocket, CheckTextFile.base, null, simpleDateFormat,quelityConsumption, members, listEventDates);
+                    System.out.println("checkTextFile.modelRocket = " + checkTextFile.modelRocket);
+                    System.out.println(launcherRocketModel.toString());
+                    try {
+                        app = new App(launcherRocketModel);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                    app.setSize(screenSize.width, screenSize.height);
+                    app.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                    app.setVisible(true);
                 }
-                app.setSize(screenSize.width, screenSize.height);
-                app.setExtendedState(JFrame.MAXIMIZED_BOTH);
-                app.setVisible(true);
             }
 
         }else {
@@ -140,9 +120,9 @@ public class TextReader {
         // 6) наличее модели ракеты+ 7. списка экипажа с номерами.+-
         // 8) число экипажа буквами+
         // 9)место запуска+
-        // 10) должность и звание главнокомандуещеего
+        // 10) должность и звание главнокомандуещеего+
         // 11) обьем выделенного горячего+.
-        // 12) и полсе только ниже прописанная проверка с внесением данных в перемены и об'єкти.
+        // 12) и полсе только ниже прописанная проверка с внесением данных в перемены и об'єкти.+-
     }
 
     //1.Находим в списком экипажа по должностям

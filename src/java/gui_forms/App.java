@@ -3,7 +3,8 @@ package gui_forms;
 import model.CityBaseLandingSite;
 import model.DataFlight;
 import model.LauncherRocketModel;
-import operations.ChangeOperationOnMonitor;
+import operations.DBHadler;
+import operations.EventName;
 import operations.LandingCrewAndMachine;
 import threads.LaunchThread;
 import threads.MotorThread;
@@ -16,6 +17,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,7 +29,7 @@ public class App extends JFrame {
 
     static App app;
 
-    public static double quelityConsumption = 5000;//количество топлива RP-1 на один мотор
+    public static double quelityConsumption = 0;//количество топлива RP-1 на один мотор
     public static boolean run = false;
 
     public final static double fuelConsumption = 50; //100 за cекунду RP-1  одного мотора
@@ -39,7 +41,6 @@ public class App extends JFrame {
     public static double currentDistance;
     public static double currentQuelityConsumption;
 
-    private  ChangeOperationOnMonitor changeOperationOnMonitor = new ChangeOperationOnMonitor();
 
     public JPanel panelMain;
     private JButton leaveButton;
@@ -76,10 +77,11 @@ public class App extends JFrame {
     private boolean returnFact = false;
 
     LauncherRocketModel launcherRocketModel;
+    DBHadler dbHadler = new DBHadler();
 
 
 
-    public App(LauncherRocketModel launcherRocketModel) throws IOException {
+    public App(LauncherRocketModel launcherRocketModel) throws IOException, SQLException {
 
 
         super("Launcher");
@@ -88,6 +90,9 @@ public class App extends JFrame {
         this.pack();
 
         this.launcherRocketModel = launcherRocketModel;
+        //топлива на один двигатель
+        quelityConsumption = launcherRocketModel.getQuelityConsumption() / 2;
+
 
         listIterations = new ArrayList<String>();
         listModel = new DefaultListModel();
@@ -95,11 +100,10 @@ public class App extends JFrame {
 
         firstPictureOnStart = showRocketFirstly();
 
-
         monitorPanel.add(firstPictureOnStart);
 
-        //System.out.println(launcherRocketModel.toString());
-
+        //обавляем в бд номер полета
+        dbHadler.methodInsertFlightInDB(launcherRocketModel.getNumberFlight(), launcherRocketModel.getModelRocket());
 
         launchButton.addActionListener(new ActionListener() {
             @Override
@@ -109,6 +113,12 @@ public class App extends JFrame {
                         App.run = true;
                         launchFact = true;
                         new LaunchThread();
+                        try {
+                            //Фиксация события старт
+                            dbHadler.methodInsertFactTime(launcherRocketModel.getNumberFlight(), EventName.LAUNCH);
+                        } catch (SQLException ex) {
+                            ex.printStackTrace();
+                        }
                     } else {
                         JOptionPane.showMessageDialog(null, "The rocket has launched already!");
                     }
@@ -125,14 +135,19 @@ public class App extends JFrame {
                     }
                 } else {
                     if(returnFact == false){
-                        if(distance >= 100){
+                        if(currentDistance > 100){
                             App.run = false;
                             try {
                                 changePictureForFlight("satellite.jpg");
-                            } catch (IOException ex) {
+                                //Фиксация события старт
+                                dbHadler.methodInsertFactTime(launcherRocketModel.getNumberFlight(), EventName.STOP_ON_ORBITE);
+
+                            } catch (IOException | SQLException ex) {
                                 ex.printStackTrace();
                             }
                             showDataFlight();
+
+
                         } else JOptionPane.showMessageDialog(null, "The distance is too short, that we can stop! If distance more 100 km we can stop.");
                     }
 
@@ -158,7 +173,7 @@ public class App extends JFrame {
                                     ex.printStackTrace();
                                 }
                                 JOptionPane.showMessageDialog(null, cityBaseLandingSite.toString());
-                                new ReturnOnEarthThread(App.distance, cityBaseLandingSite);
+                                new ReturnOnEarthThread(currentDistance, currentQuelityConsumption, cityBaseLandingSite);
                             } else{
                                 returnFact = false;
                                 JOptionPane.showMessageDialog(null, "Try, again!");
@@ -174,12 +189,13 @@ public class App extends JFrame {
         buttonCommander.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(textAreaCommander.getText() != ""){}
-                //TODO сделоть сообщения от командира станции в реальном режиме
-                Date now = new Date();
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
-                addItem(simpleDateFormat.format(now) + " " + textAreaCommander.getText());
-                textAreaCommander.setText("");
+                if(textAreaCommander.getText() != ""){
+                    // сообщения от командира станции в реальном режиме
+                    Date now = new Date();
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
+                    addItem(simpleDateFormat.format(now) + " " + textAreaCommander.getText());
+                    textAreaCommander.setText("");
+                }
             }
         });
 
@@ -211,10 +227,6 @@ public class App extends JFrame {
             }
         });
     }
-
-
-
-
     /*public static void addItem(String it) {
         //добавляет в коллекцию JList
         listIterations.add(it);
@@ -248,10 +260,7 @@ public class App extends JFrame {
         firstPictureOnStart.setIcon(imageIcon);
     }
 
-
-
      void showDataFlight() {
-
         labelDistance.setText("");
         labelConsumption.setText("");
 
@@ -287,7 +296,6 @@ public class App extends JFrame {
         final Thread thread2 = new MotorThread(queue2);
         thread2.start();
 
-        ///1.TODO java.lang.ArrayIndexOutOfBoundsException некорректно работает очередь при добавлении в коллекцию
         while (true) {
             //сумма  дистанции первого и второго двигателя
             currentDistance = queue1.take().distance + queue2.take().distance;
