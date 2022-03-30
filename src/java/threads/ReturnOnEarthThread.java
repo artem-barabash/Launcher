@@ -2,9 +2,12 @@ package threads;
 
 import gui_forms.App;
 import model.CityBaseLandingSite;
+import operations.DBHadler;
+import operations.EventName;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -14,13 +17,16 @@ public class ReturnOnEarthThread implements Runnable{
     double distance;
     double quelityConsumption;
     CityBaseLandingSite base;
+    int currentNumberFlight;
 
-    public ReturnOnEarthThread(double distanceToEarth, double quelityConsumptionToEarth, CityBaseLandingSite baseOnEarth){
+    public ReturnOnEarthThread(double distanceToEarth, double quelityConsumptionToEarth, CityBaseLandingSite baseOnEarth, int numberFlight ){
         t = new Thread(this, "tugboat");
 
         distance = distanceToEarth;
         quelityConsumption = quelityConsumptionToEarth;
         base = baseOnEarth;
+
+        currentNumberFlight = numberFlight;
 
         t.start();
     }
@@ -65,8 +71,15 @@ public class ReturnOnEarthThread implements Runnable{
         }
         new ParachuteFlightThread().run();
 
+
+
     }
 
+    public  void addTimeToDb(int numberFlight) throws SQLException {
+        DBHadler dbHadler = new DBHadler();
+        // Фиксация события приземления на Земл
+        dbHadler.methodInsertFactTime(numberFlight, EventName.LANDING);
+    }
     class ParachuteFlightThread implements Runnable{
         Date now = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
@@ -80,7 +93,15 @@ public class ReturnOnEarthThread implements Runnable{
                 App.addItem(simpleDateFormat.format(now)+  " - The parachute has flied " + String.format("%.2f",distance ) +  " km. already.\nThe fuel left " +  String.format("%.2f", quelityConsumption) + " kg. yet.");
             }
 
-            JOptionPane.showMessageDialog(null, "The machine landed.");
+            try {
+                addTimeToDb(currentNumberFlight);
+                JOptionPane.showMessageDialog(null, "The machine landed.");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+
+
         }
     }
 }

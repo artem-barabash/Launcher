@@ -63,6 +63,7 @@ public class App extends JFrame {
     private JTextArea textAreaCommander;
     private JButton buttonCommander;
     public   JScrollPane scrollPane;
+    private JButton archiveButton;
 
     static ArrayList<String> listIterations;
     static DefaultListModel listModel;
@@ -76,13 +77,14 @@ public class App extends JFrame {
     //один раз включил возврат на Землю
     private boolean returnFact = false;
 
+    //факт приземления машины на землю
+    public static boolean factLanding = false;
+
     LauncherRocketModel launcherRocketModel;
     DBHadler dbHadler = new DBHadler();
 
 
-
     public App(LauncherRocketModel launcherRocketModel) throws IOException, SQLException {
-
 
         super("Launcher");
         this.setContentPane(this.panelMain);
@@ -92,7 +94,6 @@ public class App extends JFrame {
         this.launcherRocketModel = launcherRocketModel;
         //топлива на один двигатель
         quelityConsumption = launcherRocketModel.getQuelityConsumption() / 2;
-
 
         listIterations = new ArrayList<String>();
         listModel = new DefaultListModel();
@@ -139,7 +140,7 @@ public class App extends JFrame {
                             App.run = false;
                             try {
                                 changePictureForFlight("satellite.jpg");
-                                //Фиксация события старт
+                                //Фиксация события стоп на орбите
                                 dbHadler.methodInsertFactTime(launcherRocketModel.getNumberFlight(), EventName.STOP_ON_ORBITE);
 
                             } catch (IOException | SQLException ex) {
@@ -150,7 +151,6 @@ public class App extends JFrame {
 
                         } else JOptionPane.showMessageDialog(null, "The distance is too short, that we can stop! If distance more 100 km we can stop.");
                     }
-
                 }
             }
         });
@@ -173,7 +173,13 @@ public class App extends JFrame {
                                     ex.printStackTrace();
                                 }
                                 JOptionPane.showMessageDialog(null, cityBaseLandingSite.toString());
-                                new ReturnOnEarthThread(currentDistance, currentQuelityConsumption, cityBaseLandingSite);
+                                new ReturnOnEarthThread(currentDistance, currentQuelityConsumption, cityBaseLandingSite, launcherRocketModel.getNumberFlight());
+                                try {
+                                    // Фиксация события начала возрата на Землю
+                                    dbHadler.methodInsertFactTime(launcherRocketModel.getNumberFlight(), EventName.LEFT_ON_EARTH);
+                                } catch (SQLException ex) {
+                                    ex.printStackTrace();
+                                }
                             } else{
                                 returnFact = false;
                                 JOptionPane.showMessageDialog(null, "Try, again!");
@@ -199,7 +205,27 @@ public class App extends JFrame {
             }
         });
 
+        archiveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Archive archive = null;
+                try {
+                    archive = new Archive();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+
+                archive.setSize(1000, 700);
+                //fixed sizes
+                archive.setResizable(false);
+                archive.setVisible(true);
+
+            }
+        });
+
     }
+
+
 
     public static void addItem(String it) {
         listIterations.add(it);

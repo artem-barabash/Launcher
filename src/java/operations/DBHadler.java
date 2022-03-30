@@ -16,6 +16,7 @@ public class DBHadler {
         try{
             Class.forName("org.sqlite.JDBC");
             Connection connection = DriverManager.getConnection("jdbc:sqlite::resource:data/launcher.db");
+            //Connection connection = DriverManager.getConnection("jdbc:sqlite:launcher.db");
 
             statement = connection.createStatement();
             //System.out.println("Connected");
@@ -70,6 +71,22 @@ public class DBHadler {
         statement.executeUpdate(queryInsert);
     }
 
+    //3.Вывод на экран архива данных
+    public ArrayList<Integer> methodSelectLaunchers() throws SQLException {
+        getConnection();
+
+        ArrayList<Integer> integerArrayList = new ArrayList<>();
+
+        String querySelect = "SELECT * FROM flights";
+        ResultSet resultSet = statement.executeQuery(querySelect);
+
+        while (resultSet.next()){
+            integerArrayList.add(resultSet.getInt("id"));
+        }
+
+        return integerArrayList;
+    }
+
     //тестим
     public void selectAnyThing() throws SQLException, ParseException {
         //SELECT
@@ -88,7 +105,7 @@ public class DBHadler {
 
         DBHadler dbHadler = new DBHadler();
         //dbHadler.methodInsertFlightInDB(1, "falcon 9");
-        //dbHadler.methodInsertFactTime(0, EventName.LAUNCH);
+        dbHadler.selectAnyThing();
 
     }
 
