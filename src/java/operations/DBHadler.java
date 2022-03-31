@@ -89,7 +89,7 @@ public class DBHadler {
             LauncherRocketModel modelFlight = new LauncherRocketModel(number,model, null, null,null,0, null, null );
             launcherRocketModelArrayList.add(modelFlight);
         }
-
+        System.out.println("methodSelectLaunchers = " + launcherRocketModelArrayList.size());
         return launcherRocketModelArrayList;
     }
 

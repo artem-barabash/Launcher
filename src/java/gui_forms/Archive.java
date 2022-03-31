@@ -6,17 +6,14 @@ import operations.DBHadler;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class Archive extends JFrame{
     private JPanel panelMain;
 
-    static ArrayList<LauncherRocketModel> listIterations;
-    static DefaultListModel listModel;
+    static ArrayList<LauncherRocketModel> launcherRocketModelArrayList;
 
     private JList listFlights;
 
@@ -34,56 +31,34 @@ public class Archive extends JFrame{
 
         DBHadler dbHadler = new DBHadler();
 
-        listIterations = new ArrayList<LauncherRocketModel>();
-        String labels[] = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J" };
-        listIterations.addAll(dbHadler.methodSelectLaunchers());
+        launcherRocketModelArrayList = dbHadler.methodSelectLaunchers();
+        System.out.println(launcherRocketModelArrayList.size());
 
+        listFlights = new JList(launcherRocketModelArrayList.toArray());
 
-        listModel = new DefaultListModel();
-        listFlights.setModel(listModel);
+        listFlights.setCellRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                Component renderer = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (renderer instanceof JLabel && value instanceof LauncherRocketModel) {
 
-        for (LauncherRocketModel s : listIterations) {
-            listModel.addElement(s.getNumberFlight());
-        }
-        //TODO вывод данных по модели LauncherModel
-
-        ListSelectionListener listSelectionListener = new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent listSelectionEvent) {
-                System.out.print("First index: " + listSelectionEvent.getFirstIndex());
-                System.out.print(", Last index: " + listSelectionEvent.getLastIndex());
-                boolean adjust = listSelectionEvent.getValueIsAdjusting();
-                System.out.println(", Adjusting? " + adjust);
-                //labelFlight.setText();
-                if (!adjust) {
-                    JList list = (JList) listSelectionEvent.getSource();
-                    int selections[] = list.getSelectedIndices();
-                    LauncherRocketModel[] selectionValues = (LauncherRocketModel[]) list.getSelectedValues();
-                    for (int i = 0, n = selections.length; i < n; i++) {
-                        if (i == 0) {
-                            System.out.print("  Selections: ");
-                        }
-                        System.out.print(selections[i] + "/" + selectionValues[i].toString() + " ");
-                    }
-                    System.out.println();
+                    ((JLabel) renderer).setText(String.valueOf(((LauncherRocketModel) value).getNumberFlight()));
                 }
+                return renderer;
             }
-        };
-        listFlights.addListSelectionListener(listSelectionListener);
+        });
+        //путь правильный простооно не рабоьань
 
-        MouseListener mouseListener = new MouseAdapter() {
-            public void mouseClicked(MouseEvent mouseEvent) {
-                JList theList = (JList) mouseEvent.getSource();
-                if (mouseEvent.getClickCount() == 2) {
-                    int index = theList.locationToIndex(mouseEvent.getPoint());
-                    if (index >= 0) {
-                        Object o = theList.getModel().getElementAt(index);
-                        System.out.println("Double-clicked on: " + o.toString());
-                    }
-                }
+        listFlights.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                Object selectedModel =  listFlights.getSelectedValue();
+                labelFlight.setText(selectedModel.toString());
             }
-        };
+        });
 
-        listFlights.addMouseListener(mouseListener);
+
+
     }
 
     public static void main(String[] args) throws SQLException {

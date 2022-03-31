@@ -23,18 +23,32 @@ public class JFrameDemo extends JFrame {
         citiesArrayList.add(new CityBaseLandingSite("Kyiv", "Ukraine", true));
         citiesArrayList.add(new CityBaseLandingSite("Tel-Aviv", "Israel", false));
 
-        JList ListCities = new JList(citiesArrayList.toArray());
 
-        ListCities.setVisibleRowCount(4);
 
-        JScrollPane jcp = new JScrollPane(ListCities);
+        JList listCities = new JList(citiesArrayList.toArray());
+        listCities.setVisibleRowCount(4);
+
+        listCities.setCellRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                Component renderer = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (renderer instanceof JLabel && value instanceof CityBaseLandingSite) {
+
+                    ((JLabel) renderer).setText(((CityBaseLandingSite) value).city);
+                }
+                return renderer;
+            }
+        });
+
+
+        JScrollPane jcp = new JScrollPane(listCities);
         ControlHost.add(jcp);
         ControlHost.add(label);
 
-        ListCities.addListSelectionListener(new ListSelectionListener() {
+        listCities.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                Object SelectedCity =  ListCities.getSelectedValue();
+                Object SelectedCity =  listCities.getSelectedValue();
                 label.setText(SelectedCity.toString());
             }
         });
