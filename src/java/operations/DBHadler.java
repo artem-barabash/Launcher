@@ -1,5 +1,7 @@
 package operations;
 
+import model.LauncherRocketModel;
+
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -72,19 +74,23 @@ public class DBHadler {
     }
 
     //3.Вывод на экран архива данных
-    public ArrayList<Integer> methodSelectLaunchers() throws SQLException {
+    public ArrayList<LauncherRocketModel> methodSelectLaunchers() throws SQLException {
         getConnection();
 
-        ArrayList<Integer> integerArrayList = new ArrayList<>();
+        ArrayList<LauncherRocketModel> launcherRocketModelArrayList = new ArrayList<>();
 
         String querySelect = "SELECT * FROM flights";
         ResultSet resultSet = statement.executeQuery(querySelect);
 
         while (resultSet.next()){
-            integerArrayList.add(resultSet.getInt("id"));
+
+            int number = resultSet.getInt("id");
+            String model  = resultSet.getString("model");
+            LauncherRocketModel modelFlight = new LauncherRocketModel(number,model, null, null,null,0, null, null );
+            launcherRocketModelArrayList.add(modelFlight);
         }
 
-        return integerArrayList;
+        return launcherRocketModelArrayList;
     }
 
     //тестим

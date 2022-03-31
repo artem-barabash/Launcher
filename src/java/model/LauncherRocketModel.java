@@ -22,7 +22,8 @@ public class LauncherRocketModel {
     //date need insert into sqlite!!!!
 
 
-    public LauncherRocketModel(int numberFlight, String modelRocket, CityBase cityBaseTakeOff, CityBaseLandingSite cityBaseLandingSite, SimpleDateFormat simpleDateFormat, double quelityConsumption, ArrayList<CrewMember> crewMembers, List<DateEvent> listEventDates) {
+    public LauncherRocketModel(int numberFlight, String modelRocket, CityBase cityBaseTakeOff, CityBaseLandingSite cityBaseLandingSite,
+                               SimpleDateFormat simpleDateFormat, double quelityConsumption, ArrayList<CrewMember> crewMembers, List<DateEvent> listEventDates) {
         this.numberFlight = numberFlight;
         this.modelRocket = modelRocket;
         this.cityBaseTakeOff = cityBaseTakeOff;

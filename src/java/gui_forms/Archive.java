@@ -1,5 +1,6 @@
 package gui_forms;
 
+import model.LauncherRocketModel;
 import operations.DBHadler;
 
 import javax.swing.*;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 public class Archive extends JFrame{
     private JPanel panelMain;
 
-    static ArrayList<Integer> listIterations;
+    static ArrayList<LauncherRocketModel> listIterations;
     static DefaultListModel listModel;
 
     private JList listFlights;
@@ -27,13 +28,13 @@ public class Archive extends JFrame{
     public Archive() throws SQLException {
         super("Launcher");
         this.setContentPane(this.panelMain);
-        //this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         this.pack();
 
         DBHadler dbHadler = new DBHadler();
 
-        listIterations = new ArrayList<Integer>();
+        listIterations = new ArrayList<LauncherRocketModel>();
         String labels[] = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J" };
         listIterations.addAll(dbHadler.methodSelectLaunchers());
 
@@ -41,8 +42,8 @@ public class Archive extends JFrame{
         listModel = new DefaultListModel();
         listFlights.setModel(listModel);
 
-        for (Integer s : listIterations) {
-            listModel.addElement(s);
+        for (LauncherRocketModel s : listIterations) {
+            listModel.addElement(s.getNumberFlight());
         }
         //TODO вывод данных по модели LauncherModel
 
@@ -52,15 +53,16 @@ public class Archive extends JFrame{
                 System.out.print(", Last index: " + listSelectionEvent.getLastIndex());
                 boolean adjust = listSelectionEvent.getValueIsAdjusting();
                 System.out.println(", Adjusting? " + adjust);
+                //labelFlight.setText();
                 if (!adjust) {
                     JList list = (JList) listSelectionEvent.getSource();
                     int selections[] = list.getSelectedIndices();
-                    Object selectionValues[] = list.getSelectedValues();
+                    LauncherRocketModel[] selectionValues = (LauncherRocketModel[]) list.getSelectedValues();
                     for (int i = 0, n = selections.length; i < n; i++) {
                         if (i == 0) {
                             System.out.print("  Selections: ");
                         }
-                        System.out.print(selections[i] + "/" + selectionValues[i] + " ");
+                        System.out.print(selections[i] + "/" + selectionValues[i].toString() + " ");
                     }
                     System.out.println();
                 }
