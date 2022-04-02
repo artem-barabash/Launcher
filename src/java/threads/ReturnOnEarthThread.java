@@ -19,6 +19,8 @@ public class ReturnOnEarthThread implements Runnable{
     CityBaseLandingSite base;
     int currentNumberFlight;
 
+    DBHadler dbHadler = new DBHadler();
+
     public ReturnOnEarthThread(double distanceToEarth, double quelityConsumptionToEarth, CityBaseLandingSite baseOnEarth, int numberFlight ){
         t = new Thread(this, "tugboat");
 
@@ -95,11 +97,11 @@ public class ReturnOnEarthThread implements Runnable{
 
             try {
                 addTimeToDb(currentNumberFlight);
+                dbHadler.methodInsertDistanceAndQuelity(currentNumberFlight, App.coveredDistance , App.coveredDistance , App.launcherRocketModel.getQuelityConsumption() , App.launcherRocketModel.getQuelityConsumption() -quelityConsumption);
                 JOptionPane.showMessageDialog(null, "The machine landed.");
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-
 
 
         }

@@ -26,7 +26,7 @@ public class JFrameDemo extends JFrame {
 
 
         JList listCities = new JList(citiesArrayList.toArray());
-        listCities.setVisibleRowCount(4);
+        //listCities.setVisibleRowCount(4);
 
         listCities.setCellRenderer(new DefaultListCellRenderer() {
             @Override
@@ -34,7 +34,7 @@ public class JFrameDemo extends JFrame {
                 Component renderer = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (renderer instanceof JLabel && value instanceof CityBaseLandingSite) {
 
-                    ((JLabel) renderer).setText(((CityBaseLandingSite) value).city);
+                    ((JLabel) renderer).setText(((CityBaseLandingSite) value).getCity());
                 }
                 return renderer;
             }

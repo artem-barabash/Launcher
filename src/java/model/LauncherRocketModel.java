@@ -2,17 +2,15 @@ package model;
 
 import model.crewmemebers.CrewMember;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Date;
+import java.util.List;
 
 public class LauncherRocketModel {
     int numberFlight;//number flight
     String modelRocket; //модель ракеты
     CityBase cityBaseTakeOff;// место взлета
     CityBaseLandingSite cityBaseLandingSite; // место посадки
-    SimpleDateFormat simpleDateFormat;// dd-mm-yyyy
 
     double quelityConsumption; //к-ство топлива
 
@@ -23,12 +21,11 @@ public class LauncherRocketModel {
 
 
     public LauncherRocketModel(int numberFlight, String modelRocket, CityBase cityBaseTakeOff, CityBaseLandingSite cityBaseLandingSite,
-                               SimpleDateFormat simpleDateFormat, double quelityConsumption, ArrayList<CrewMember> crewMembers, List<DateEvent> listEventDates) {
+                              double quelityConsumption, ArrayList<CrewMember> crewMembers, List<DateEvent> listEventDates) {
         this.numberFlight = numberFlight;
         this.modelRocket = modelRocket;
         this.cityBaseTakeOff = cityBaseTakeOff;
         this.cityBaseLandingSite = cityBaseLandingSite;
-        this.simpleDateFormat = simpleDateFormat;
         this.quelityConsumption = quelityConsumption;
         this.crewMembers = crewMembers;
         this.listEventDates = listEventDates;
@@ -42,7 +39,6 @@ public class LauncherRocketModel {
     public void setNumberFlight(int numberFlight) {
         this.numberFlight = numberFlight;
     }
-
 
     public String getModelRocket() {
         return modelRocket;
@@ -66,14 +62,6 @@ public class LauncherRocketModel {
 
     public void setCityBaseLandingSite(CityBaseLandingSite cityBaseLandingSite) {
         this.cityBaseLandingSite = cityBaseLandingSite;
-    }
-
-    public SimpleDateFormat getSimpleDateFormat() {
-        return simpleDateFormat;
-    }
-
-    public void setSimpleDateFormat(SimpleDateFormat simpleDateFormat) {
-        this.simpleDateFormat = simpleDateFormat;
     }
 
     public double getQuelityConsumption() {
@@ -103,12 +91,10 @@ public class LauncherRocketModel {
     @Override
     public String toString() {
         Date date = new Date();
-        return "LauncherRocketModel{" + "\n" +
-                "numberFlight=" + numberFlight + "\n" +
+        return "numberFlight=" + numberFlight + "\n" +
                 ", modelRocket=" + modelRocket + "\n" +
                 ", cityBaseTakeOff=" + cityBaseTakeOff + "\n" +
-                ", cityBaseLandingSite=" + cityBaseLandingSite +"\n" +
-                ", simpleDateFormat=" + simpleDateFormat.format(date) + "\n" +
+                ", cityBaseLandingSite=" + cityBaseLandingSite + "\n" +
                 ", quelityConsumption=" + quelityConsumption + "\n" +
                 ", crewMembers=" + crewMembers + "\n" +
                 ", listEventDates=" + listEventDates + "\n" +

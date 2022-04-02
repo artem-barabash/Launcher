@@ -27,7 +27,11 @@ public class MotorThread extends Thread{
 
                 if (App.quelityConsumption <= 2500) {
                     App.run = false;
-                    JOptionPane.showMessageDialog(null, "Rocket has stopped, because we have only 5000 kg. consumption");
+                    App.coveredDistance = App.distance * 2;
+
+                    JOptionPane.showMessageDialog(null, "Rocket has stopped, because we have only 5000 kg. consumption.\n" +
+                            "1.Rocket has flied " +  App.coveredDistance + " km.\n" +
+                            "2.The fuel left " + App.quelityConsumption * 2 + " kg.");
                     try {
                         App.changePictureForFlight("satellite.jpg");
                     } catch (IOException e) {

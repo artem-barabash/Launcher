@@ -1,13 +1,11 @@
 package model;
 
-import java.text.SimpleDateFormat;
-
 public class DateEvent {
     int numberFlight;
-    SimpleDateFormat dateEvent;
+    String dateEvent;
     String event;
 
-    public DateEvent(int numberFlight, SimpleDateFormat dateEvent, String event) {
+    public DateEvent(int numberFlight, String dateEvent, String event) {
         this.numberFlight = numberFlight;
         this.dateEvent = dateEvent;
         this.event = event;
@@ -21,11 +19,11 @@ public class DateEvent {
         this.numberFlight = numberFlight;
     }
 
-    public SimpleDateFormat getDateEvent() {
+    public String getDateEvent() {
         return dateEvent;
     }
 
-    public void setDateEvent(SimpleDateFormat dateEvent) {
+    public void setDateEvent(String dateEvent) {
         this.dateEvent = dateEvent;
     }
 

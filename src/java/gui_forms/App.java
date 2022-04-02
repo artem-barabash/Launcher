@@ -77,10 +77,13 @@ public class App extends JFrame {
     //один раз включил возврат на Землю
     private boolean returnFact = false;
 
-    //факт приземления машины на землю
-    public static boolean factLanding = false;
+    //дистанция до стопа
+    public static double coveredDistance = 0;
 
-    LauncherRocketModel launcherRocketModel;
+    //номер полета фиксирует для класса Archive
+    public static int numberFlight = 0;
+
+    public static LauncherRocketModel launcherRocketModel;
     DBHadler dbHadler = new DBHadler();
 
 
@@ -92,6 +95,7 @@ public class App extends JFrame {
         this.pack();
 
         this.launcherRocketModel = launcherRocketModel;
+        numberFlight = launcherRocketModel.getNumberFlight();
         //топлива на один двигатель
         quelityConsumption = launcherRocketModel.getQuelityConsumption() / 2;
 
@@ -105,6 +109,8 @@ public class App extends JFrame {
 
         //обавляем в бд номер полета
         dbHadler.methodInsertFlightInDB(launcherRocketModel.getNumberFlight(), launcherRocketModel.getModelRocket());
+        //добавляем в бд весь экипаж
+        dbHadler.insertArrayListWithCrewMembers(launcherRocketModel.getNumberFlight(), launcherRocketModel.getCrewMembers());
 
         launchButton.addActionListener(new ActionListener() {
             @Override
@@ -141,13 +147,14 @@ public class App extends JFrame {
                             try {
                                 changePictureForFlight("satellite.jpg");
                                 //Фиксация события стоп на орбите
+                                coveredDistance = currentDistance;
+                                System.out.println("coveredDistance = " + coveredDistance);
                                 dbHadler.methodInsertFactTime(launcherRocketModel.getNumberFlight(), EventName.STOP_ON_ORBITE);
 
                             } catch (IOException | SQLException ex) {
                                 ex.printStackTrace();
                             }
                             showDataFlight();
-
 
                         } else JOptionPane.showMessageDialog(null, "The distance is too short, that we can stop! If distance more 100 km we can stop.");
                     }
@@ -174,9 +181,13 @@ public class App extends JFrame {
                                 }
                                 JOptionPane.showMessageDialog(null, cityBaseLandingSite.toString());
                                 new ReturnOnEarthThread(currentDistance, currentQuelityConsumption, cityBaseLandingSite, launcherRocketModel.getNumberFlight());
+
                                 try {
                                     // Фиксация события начала возрата на Землю
                                     dbHadler.methodInsertFactTime(launcherRocketModel.getNumberFlight(), EventName.LEFT_ON_EARTH);
+                                    launcherRocketModel.setCityBaseLandingSite(cityBaseLandingSite);
+                                    //вставлем в бд город запуска, и город куда планируем приземлить
+                                    dbHadler.methodInsertCityBase(launcherRocketModel.getNumberFlight(), launcherRocketModel.getCityBaseTakeOff(), launcherRocketModel.getCityBaseLandingSite());
                                 } catch (SQLException ex) {
                                     ex.printStackTrace();
                                 }
@@ -208,15 +219,15 @@ public class App extends JFrame {
         archiveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
+
                 Archive archive = null;
                 try {
                     archive = new Archive();
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
-
-                archive.setSize(1000, 700);
-                //fixed sizes
+                archive.setSize(700, 500);
                 archive.setResizable(false);
                 archive.setVisible(true);
 

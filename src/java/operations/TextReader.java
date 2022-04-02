@@ -2,7 +2,6 @@ package operations;
 
 import gui_forms.App;
 import model.CrewMembersList;
-import model.DateEvent;
 import model.LauncherRocketModel;
 import model.crewmemebers.*;
 
@@ -13,8 +12,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -89,10 +86,7 @@ public class TextReader {
 
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
 
-                    List<DateEvent> listEventDates = new ArrayList<>();
-                    listEventDates.add(new DateEvent(numberFlight, simpleDateFormat, String.valueOf(EventName.LAUNCH)));
-
-                    LauncherRocketModel launcherRocketModel = new LauncherRocketModel(numberFlight, checkTextFile.modelRocket, CheckTextFile.base, null, simpleDateFormat,quelityConsumption, members, listEventDates);
+                    LauncherRocketModel launcherRocketModel = new LauncherRocketModel(numberFlight, checkTextFile.modelRocket, CheckTextFile.base, null, quelityConsumption, members, null);
                     System.out.println("checkTextFile.modelRocket = " + checkTextFile.modelRocket);
                     System.out.println(launcherRocketModel.toString());
                     try {
