@@ -28,10 +28,8 @@ public class TextForm extends JFrame {
     public TextForm() throws IOException {
         super("Launcher");
         this.setContentPane(this.panelMain);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.pack();
-
-        //textArea.setText(TextReader.read("res/text/example-act.txt"));
 
 
         enterButton.addActionListener(new ActionListener() {
@@ -68,6 +66,7 @@ public class TextForm extends JFrame {
                 textForm.dispatchEvent(new WindowEvent(textForm, WindowEvent.WINDOW_CLOSING));
             }
         });
+
     }
 
     public String  showExampleTextFromResource(String nameTextFile) throws IOException {

@@ -37,9 +37,8 @@ public class Archive extends JFrame {
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 Component renderer = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (renderer instanceof JLabel && value instanceof LauncherRocketModel) {
-                   if(App.numberFlight != ((LauncherRocketModel) value).getNumberFlight()){
                        ((JLabel) renderer).setText(String.valueOf(((LauncherRocketModel) value).getNumberFlight()));
-                   }
+
                 }
                 return renderer;
             }
@@ -103,7 +102,6 @@ public class Archive extends JFrame {
         launcherRocketModel.setCrewMembers(dbHadler.selectArrayListWithCrewMember(launcherRocketModel.getNumberFlight()));
         sb.append(methodShowCrewMembersList(launcherRocketModel.getCrewMembers()));
 
-
         return "<html><pre>" + sb.toString() +  "</pre></html>";
     }
 
@@ -121,17 +119,17 @@ public class Archive extends JFrame {
 
         for(CrewMember crewMember : crewMembers) {
             stringBuilder.append("<p>" + crewMember.getNumber() + ". " + crewMember.getPosition()
-                    + " - " + crewMember.getName() + " " + crewMember.getSurname() + "</p>");
+                    + " - " + crewMember.getName() + " " + crewMember.getSurname() + ".</p>");
         }
 
         return "<div>" + caption + stringBuilder.toString() + "</div>";
     }
 
-   /* public static void main(String[] args) throws SQLException {
+   public static void main(String[] args) throws SQLException {
         Archive archive = new Archive();
 
         archive.setSize(700, 500);
         archive.setResizable(false);
         archive.setVisible(true);
-    }*/
+    }
 }

@@ -77,11 +77,6 @@ public class ReturnOnEarthThread implements Runnable{
 
     }
 
-    public  void addTimeToDb(int numberFlight) throws SQLException {
-        DBHadler dbHadler = new DBHadler();
-        // Фиксация события приземления на Земл
-        dbHadler.methodInsertFactTime(numberFlight, EventName.LANDING);
-    }
     class ParachuteFlightThread implements Runnable{
         Date now = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
@@ -96,14 +91,16 @@ public class ReturnOnEarthThread implements Runnable{
             }
 
             try {
-                addTimeToDb(currentNumberFlight);
+                // Фиксация события приземления на Земл
+                dbHadler.methodInsertFactTime(currentNumberFlight, EventName.LANDING);
                 dbHadler.methodInsertDistanceAndQuelity(currentNumberFlight, App.coveredDistance , App.coveredDistance , App.launcherRocketModel.getQuelityConsumption() , App.launcherRocketModel.getQuelityConsumption() -quelityConsumption);
                 JOptionPane.showMessageDialog(null, "The machine landed.");
+                //Факт приземления
+                App.landingFact = true;
+
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-
-
         }
     }
 }

@@ -27,7 +27,7 @@ import java.util.concurrent.BlockingQueue;
 
 public class App extends JFrame {
 
-    static App app;
+    public static App app;
 
     public static double quelityConsumption = 0;//количество топлива RP-1 на один мотор
     public static boolean run = false;
@@ -77,11 +77,15 @@ public class App extends JFrame {
     //один раз включил возврат на Землю
     private boolean returnFact = false;
 
+    //факт приземления
+    public static boolean landingFact = false;
+
     //дистанция до стопа
     public static double coveredDistance = 0;
 
     //номер полета фиксирует для класса Archive
     public static int numberFlight = 0;
+
 
     public static LauncherRocketModel launcherRocketModel;
     DBHadler dbHadler = new DBHadler();
@@ -90,9 +94,13 @@ public class App extends JFrame {
     public App(LauncherRocketModel launcherRocketModel) throws IOException, SQLException {
 
         super("Launcher");
+        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.setContentPane(this.panelMain);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();
+
+        //TODO Запрет на закрытие окна после пуска
+
+
 
         this.launcherRocketModel = launcherRocketModel;
         numberFlight = launcherRocketModel.getNumberFlight();
@@ -107,25 +115,35 @@ public class App extends JFrame {
 
         monitorPanel.add(firstPictureOnStart);
 
+
+        if(landingFact) this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+
         //обавляем в бд номер полета
         dbHadler.methodInsertFlightInDB(launcherRocketModel.getNumberFlight(), launcherRocketModel.getModelRocket());
         //добавляем в бд весь экипаж
         dbHadler.insertArrayListWithCrewMembers(launcherRocketModel.getNumberFlight(), launcherRocketModel.getCrewMembers());
+
+
+        /*this.addWindowStateListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+
+            }
+
+        });*/
 
         launchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(launchFact == false){
                     if (App.run == false) {
+
+                        //Фиксация события старт
+                        dbHadler.methodInsertFactTime(launcherRocketModel.getNumberFlight(), EventName.LAUNCH);
                         App.run = true;
                         launchFact = true;
                         new LaunchThread();
-                        try {
-                            //Фиксация события старт
-                            dbHadler.methodInsertFactTime(launcherRocketModel.getNumberFlight(), EventName.LAUNCH);
-                        } catch (SQLException ex) {
-                            ex.printStackTrace();
-                        }
+
                     } else {
                         JOptionPane.showMessageDialog(null, "The rocket has launched already!");
                     }
@@ -145,15 +163,16 @@ public class App extends JFrame {
                         if(currentDistance > 100){
                             App.run = false;
                             try {
+                                dbHadler.methodInsertFactTime(launcherRocketModel.getNumberFlight(), EventName.STOP_ON_ORBITE);
                                 changePictureForFlight("satellite.jpg");
                                 //Фиксация события стоп на орбите
                                 coveredDistance = currentDistance;
                                 System.out.println("coveredDistance = " + coveredDistance);
-                                dbHadler.methodInsertFactTime(launcherRocketModel.getNumberFlight(), EventName.STOP_ON_ORBITE);
-
-                            } catch (IOException | SQLException ex) {
+                            } catch (IOException ex) {
                                 ex.printStackTrace();
                             }
+
+
                             showDataFlight();
 
                         } else JOptionPane.showMessageDialog(null, "The distance is too short, that we can stop! If distance more 100 km we can stop.");
@@ -235,8 +254,6 @@ public class App extends JFrame {
         });
 
     }
-
-
 
     public static void addItem(String it) {
         listIterations.add(it);
