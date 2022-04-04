@@ -2,6 +2,7 @@ package threads;
 
 import gui_forms.App;
 import model.CityBaseLandingSite;
+import model.Constants;
 import operations.DBHadler;
 import operations.EventName;
 
@@ -48,6 +49,7 @@ public class ReturnOnEarthThread implements Runnable{
         while (App.run) {
 
             distance -= App.speed;
+            Constants.accidentWay += App.speed;
             quelityConsumption -= App.fuelConsumption;
 
 
@@ -92,8 +94,9 @@ public class ReturnOnEarthThread implements Runnable{
 
             try {
                 // Фиксация события приземления на Земл
-                dbHadler.methodInsertFactTime(currentNumberFlight, EventName.LANDING);
+                dbHadler.methodInsertFactTime(currentNumberFlight, String.valueOf(EventName.LANDING));
                 dbHadler.methodInsertDistanceAndQuelity(currentNumberFlight, App.coveredDistance , App.coveredDistance , App.launcherRocketModel.getQuelityConsumption() , App.launcherRocketModel.getQuelityConsumption() -quelityConsumption);
+
                 JOptionPane.showMessageDialog(null, "The machine landed.");
                 //Факт приземления
                 App.landingFact = true;

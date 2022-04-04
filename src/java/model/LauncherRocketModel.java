@@ -6,9 +6,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class LauncherRocketModel {
+public class LauncherRocketModel{
     int numberFlight;//number flight
     String modelRocket; //модель ракеты
+    String status; // статус полета
     CityBase cityBaseTakeOff;// место взлета
     CityBaseLandingSite cityBaseLandingSite; // место посадки
 
@@ -20,10 +21,11 @@ public class LauncherRocketModel {
     //date need insert into sqlite!!!!
 
 
-    public LauncherRocketModel(int numberFlight, String modelRocket, CityBase cityBaseTakeOff, CityBaseLandingSite cityBaseLandingSite,
+    public LauncherRocketModel(int numberFlight, String modelRocket, String status, CityBase cityBaseTakeOff, CityBaseLandingSite cityBaseLandingSite,
                               double quelityConsumption, ArrayList<CrewMember> crewMembers, List<DateEvent> listEventDates) {
         this.numberFlight = numberFlight;
         this.modelRocket = modelRocket;
+        this.status = status;
         this.cityBaseTakeOff = cityBaseTakeOff;
         this.cityBaseLandingSite = cityBaseLandingSite;
         this.quelityConsumption = quelityConsumption;
@@ -46,6 +48,14 @@ public class LauncherRocketModel {
 
     public void setModelRocket(String modelRocket) {
         this.modelRocket = modelRocket;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public CityBase getCityBaseTakeOff() {
@@ -88,11 +98,14 @@ public class LauncherRocketModel {
         this.listEventDates = listEventDates;
     }
 
+
+
     @Override
     public String toString() {
         Date date = new Date();
         return "numberFlight=" + numberFlight + "\n" +
                 ", modelRocket=" + modelRocket + "\n" +
+                ", status=" + status + "\n" +
                 ", cityBaseTakeOff=" + cityBaseTakeOff + "\n" +
                 ", cityBaseLandingSite=" + cityBaseLandingSite + "\n" +
                 ", quelityConsumption=" + quelityConsumption + "\n" +

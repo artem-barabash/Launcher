@@ -30,8 +30,8 @@ public class MotorThread extends Thread{
                     App.coveredDistance = App.distance * 2;
 
                     JOptionPane.showMessageDialog(null, "Rocket has stopped, because we have only 5000 kg. consumption.\n" +
-                            "1.Rocket has flied " +  App.coveredDistance + " km.\n" +
-                            "2.The fuel left " + App.quelityConsumption * 2 + " kg.");
+                            "1.Rocket has flied " +  App.currentDistance + " km.\n" +
+                            "2.The fuel left " + App.currentQuelityConsumption + " kg.");
                     try {
                         App.changePictureForFlight("satellite.jpg");
                     } catch (IOException e) {

@@ -1,9 +1,7 @@
 package operations;
 
-import model.CityBase;
-import model.CityBaseLandingSite;
-import model.DateEvent;
-import model.LauncherRocketModel;
+import gui_forms.Archive;
+import model.*;
 import model.crewmemebers.CrewMember;
 
 import java.sql.*;
@@ -16,8 +14,8 @@ public class DBHadler {
     Statement statement;
 
     public  Connection getConnection(){
-        //String url = "jdbc:sqlite::resource:data/launcher.db";
-        String url = "jdbc:sqlite:launcher.db";
+        String url = "jdbc:sqlite::resource:data/launcher.db";
+        //String url = "jdbc:sqlite:launcher.db";
 
         Connection connection = null;
         try {
@@ -32,12 +30,13 @@ public class DBHadler {
 
     //1. Добавляем полет в базу - таблица flights
     public  void methodInsertFlightInDB(int numberFlight, String modelRocket) throws SQLException {
-        String queryInsert = "INSERT INTO flights(id, model) VALUES (?, ?)";
+        String queryInsert = "INSERT INTO flights(id, model, status) VALUES (?, ?, ?)";
 
         try (Connection currentConn = this.getConnection();
         PreparedStatement preparedStatement = currentConn.prepareStatement(queryInsert)){
             preparedStatement.setInt(1, numberFlight);
             preparedStatement.setString(2, modelRocket);
+            preparedStatement.setString(3, String.valueOf(StatusLaunch.SUCCESS));
 
             preparedStatement.executeUpdate();
 
@@ -66,7 +65,7 @@ public class DBHadler {
         return listNumbers.contains(currentNumber);
     }
     //2. Добавить время события в бд
-    public void methodInsertFactTime(int numberFlight, EventName eventName)  {
+    public void methodInsertFactTime(int numberFlight, String eventName)  {
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
         Date date = new Date();
@@ -106,8 +105,8 @@ public class DBHadler {
 
     //4. километраж и расход топлива
     public void methodInsertDistanceAndQuelity(int numberFlight, double kilometersThere, double kilometersBack,
-                                               double quelityConsumption, double spentConsumption) throws SQLException {
-        String queryInsert = "INSERT INTO distance(flight_id, there, back, quelity, spent_consumption) VALUES (?, ?, ?, ?, ?)";
+                                               double quelityConsumption, double leftConsumption) throws SQLException {
+        String queryInsert = "INSERT INTO distance(flight_id, there, back, quelity, left_consumption) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection currentConn = this.getConnection();
              PreparedStatement preparedStatement = currentConn.prepareStatement(queryInsert)){
@@ -115,7 +114,7 @@ public class DBHadler {
             preparedStatement.setDouble(2, kilometersThere);
             preparedStatement.setDouble(3, kilometersBack);
             preparedStatement.setDouble(4, quelityConsumption);
-            preparedStatement.setDouble(5, spentConsumption);
+            preparedStatement.setDouble(5, leftConsumption);
 
             preparedStatement.executeUpdate();
 
@@ -165,7 +164,8 @@ public class DBHadler {
 
                 int number = resultSet.getInt("id");
                 String model  = resultSet.getString("model");
-                LauncherRocketModel modelFlight = new LauncherRocketModel(number,model, null, null,0,null, null );
+                String status = resultSet.getString("status");
+                LauncherRocketModel modelFlight = new LauncherRocketModel(number,model, status, null, null,0,null, null );
                 launcherRocketModelArrayList.add(modelFlight);
             }
         }catch (SQLException ex){
@@ -202,7 +202,7 @@ public class DBHadler {
 
         String querySelect = "SELECT * FROM place WHERE flight_id = ?";
 
-        CityBase cityBase = null;
+        //CityBase cityBase = null;
 
         try(Connection currentConn = this.getConnection();
             PreparedStatement preparedStatement = currentConn.prepareStatement(querySelect)){
@@ -212,24 +212,23 @@ public class DBHadler {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                cityBase = new CityBase(resultSet.getString("launch_city"),
+                return new CityBase(resultSet.getString("launch_city"),
                         resultSet.getString("launch_country"));
-                return cityBase;
-            }
 
+            }
 
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
         }
 
-        return cityBase;
+        return null;
     }
     //3.1 Вывод места приземления
     public CityBaseLandingSite selectCityBaseLanding(int numberFlight) {
 
         String querySelect = "SELECT receiver_city, receiver_country FROM place WHERE flight_id = ?";
 
-        CityBaseLandingSite cityBaseLandingSite = null;
+        //CityBaseLandingSite cityBaseLandingSite = null;
 
         try(Connection currentConn = this.getConnection();
             PreparedStatement preparedStatement = currentConn.prepareStatement(querySelect)){
@@ -239,14 +238,14 @@ public class DBHadler {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                cityBaseLandingSite = new CityBaseLandingSite(resultSet.getString("receiver_city"),
+                return new CityBaseLandingSite(resultSet.getString("receiver_city"),
                         resultSet.getString("receiver_country"), true);
 
             }
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
         }
-        return cityBaseLandingSite;
+        return null;
     }
 
     //4 Вывод данных о дистанции и расходе топлива
@@ -254,7 +253,7 @@ public class DBHadler {
         double there_kilometers = 0;
         double back_kilometers = 0;
         double fuel_quantity = 0;
-        double spent_consumption = 0;
+        double left_consumption = 0;
 
         String querySelect = "SELECT * FROM distance WHERE flight_id = ?";
 
@@ -269,16 +268,20 @@ public class DBHadler {
                 there_kilometers = resultSet.getDouble("there");
                 back_kilometers = resultSet.getDouble("back");
                 fuel_quantity = resultSet.getDouble("quelity");
-                spent_consumption = resultSet.getDouble("spent_consumption");
+                left_consumption = resultSet.getDouble("left_consumption");
             }
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
         }
 
+        Archive.wayToOrbite = there_kilometers;
+        Archive.backWay = back_kilometers;
+
         String line = "<p>The starting amount of combustible - " + fuel_quantity + " kg.</p>\n" +
                 "<p>The rocket flew " + String.format("%.2f",there_kilometers) +" km. to the orbit.</p>\n" +
                 "<p>Tugging distance - "+ String.format("%.2f",back_kilometers) + " km.</p>\n" +
-                "<p>Total amount of fuel used - " + spent_consumption + " kg.</p>\n";
+                "<p>Fuel left - " + left_consumption + " kg.</p>\n" +
+                "<p>Fuel used - " + String.format("%.2f",fuel_quantity - left_consumption) + " kg.</p>\n";
         return line;
     }
 
@@ -307,8 +310,36 @@ public class DBHadler {
         return crewMembers;
     }
 
-    public static void main(String[] args) {
+    //UPDATE
+    //Обновляем статус полета
+    public void updateStatusLaunch(int numberFlight, String status){
+        String sqlUpdate = "UPDATE flights SET status = ? WHERE id = ?";
 
+        try (Connection currentConn = this.getConnection();
+             PreparedStatement preparedStatement = currentConn.prepareStatement(sqlUpdate)){
+            preparedStatement.setString(1, status);
+            preparedStatement.setInt(2, numberFlight);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    //DELETE
+    //удаляем эпикаж отмененного полета
+    public void deleteCrewMembers(int numberFlight){
+        String sqlDelete = "DELETE FROM crew_members WHERE flight_id = ?";
+
+        try (Connection currentConn = this.getConnection();
+             PreparedStatement preparedStatement = currentConn.prepareStatement(sqlDelete)){
+                preparedStatement.setInt(1, numberFlight);
+
+                preparedStatement.executeUpdate();
+        }catch (SQLException ex){
+            System.out.println(ex.getMessage());
+        }
     }
 
 }
