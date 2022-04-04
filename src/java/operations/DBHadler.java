@@ -202,7 +202,7 @@ public class DBHadler {
 
         String querySelect = "SELECT * FROM place WHERE flight_id = ?";
 
-        CityBase cityBase = null;
+        //CityBase cityBase = null;
 
         try(Connection currentConn = this.getConnection();
             PreparedStatement preparedStatement = currentConn.prepareStatement(querySelect)){
@@ -212,24 +212,23 @@ public class DBHadler {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                cityBase = new CityBase(resultSet.getString("launch_city"),
+                return new CityBase(resultSet.getString("launch_city"),
                         resultSet.getString("launch_country"));
-                return cityBase;
-            }
 
+            }
 
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
         }
 
-        return cityBase;
+        return null;
     }
     //3.1 Вывод места приземления
     public CityBaseLandingSite selectCityBaseLanding(int numberFlight) {
 
         String querySelect = "SELECT receiver_city, receiver_country FROM place WHERE flight_id = ?";
 
-        CityBaseLandingSite cityBaseLandingSite = null;
+        //CityBaseLandingSite cityBaseLandingSite = null;
 
         try(Connection currentConn = this.getConnection();
             PreparedStatement preparedStatement = currentConn.prepareStatement(querySelect)){
@@ -239,14 +238,14 @@ public class DBHadler {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                cityBaseLandingSite = new CityBaseLandingSite(resultSet.getString("receiver_city"),
+                return new CityBaseLandingSite(resultSet.getString("receiver_city"),
                         resultSet.getString("receiver_country"), true);
 
             }
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
         }
-        return cityBaseLandingSite;
+        return null;
     }
 
     //4 Вывод данных о дистанции и расходе топлива

@@ -28,8 +28,9 @@ public class TextForm extends JFrame {
     public TextForm() throws IOException {
         super("Launcher");
         this.setContentPane(this.panelMain);
-        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();
+
 
 
         enterButton.addActionListener(new ActionListener() {

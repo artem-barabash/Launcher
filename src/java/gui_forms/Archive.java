@@ -9,6 +9,8 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -27,11 +29,12 @@ public class Archive extends JFrame {
 
         ArrayList<LauncherRocketModel> launcherRocketModelArrayList = dbHadler.methodSelectLaunchers();
 
+
         //удаляем из коллекции текущий полет(элемент), т.к он делает ошибку
         launcherRocketModelArrayList.removeIf(n -> n.getNumberFlight() == App.numberFlight);
 
-        JList jListFlights = new JList(launcherRocketModelArrayList.toArray());
 
+        JList jListFlights = new JList(launcherRocketModelArrayList.toArray());
         jListFlights.setCellRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -43,6 +46,9 @@ public class Archive extends JFrame {
                 return renderer;
             }
         });
+
+
+       ;
 
 
         JScrollPane jcpList = new JScrollPane(jListFlights);
@@ -90,10 +96,13 @@ public class Archive extends JFrame {
         //город и страна, базы запуска, и место приземления //table - place
         launcherRocketModel.setCityBaseTakeOff(dbHadler.selectCityBase(launcherRocketModel.getNumberFlight()));
         launcherRocketModel.setCityBaseLandingSite(dbHadler.selectCityBaseLanding(launcherRocketModel.getNumberFlight()));
-        //вывод в форму
-        sb.append("<p>Rocket launch site is " + launcherRocketModel.getCityBaseTakeOff().city + " - " + launcherRocketModel.getCityBaseTakeOff().country + ".</p>\n");
-        sb.append("<p>Landing site is " + launcherRocketModel.getCityBaseLandingSite().city + " - " + launcherRocketModel.getCityBaseLandingSite().country + ".</p>\n");
-        sb.append("\n");
+        //вывод в формуi
+        if(launcherRocketModel.getCityBaseTakeOff() != null || launcherRocketModel.getCityBaseLandingSite() != null){
+            sb.append("<p>Rocket launch site is " + launcherRocketModel.getCityBaseTakeOff().city + " - " + launcherRocketModel.getCityBaseTakeOff().country + ".</p>\n");
+            sb.append("<p>Landing site is " +  launcherRocketModel.getCityBaseLandingSite().city + " - " + launcherRocketModel.getCityBaseLandingSite().country + ".</p>\n");
+            sb.append("\n");
+        }
+
         //расстояние и расход топлива //table - distance
         sb.append("<i>" + dbHadler.selectDataAboutDistanceAndFuelConsumption(launcherRocketModel.getNumberFlight()) +  "</i>");
         sb.append("\n");

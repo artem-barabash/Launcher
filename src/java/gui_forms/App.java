@@ -15,6 +15,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -94,7 +96,8 @@ public class App extends JFrame {
     public App(LauncherRocketModel launcherRocketModel) throws IOException, SQLException {
 
         super("Launcher");
-        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        //this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setContentPane(this.panelMain);
         this.pack();
 
@@ -115,22 +118,20 @@ public class App extends JFrame {
 
         monitorPanel.add(firstPictureOnStart);
 
-
-        if(landingFact) this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-
         //обавляем в бд номер полета
         dbHadler.methodInsertFlightInDB(launcherRocketModel.getNumberFlight(), launcherRocketModel.getModelRocket());
         //добавляем в бд весь экипаж
         dbHadler.insertArrayListWithCrewMembers(launcherRocketModel.getNumberFlight(), launcherRocketModel.getCrewMembers());
 
 
-        /*this.addWindowStateListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
 
+        this.addWindowListener(new WindowAdapter()
+        {
+            public void windowClosing(WindowEvent e)
+            {
+                //TODO закрытие преждевременное 1.Cancel - удалине из бд 2.Fail все вносится, и CityLanding Space Space, и время аварии.3. если менше чем за 15 км до Земли, то
             }
-
-        });*/
+        });
 
         launchButton.addActionListener(new ActionListener() {
             @Override
@@ -253,7 +254,10 @@ public class App extends JFrame {
             }
         });
 
+
+
     }
+
 
     public static void addItem(String it) {
         listIterations.add(it);

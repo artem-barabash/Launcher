@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class LauncherRocketModel {
+public class LauncherRocketModel{
     int numberFlight;//number flight
     String modelRocket; //модель ракеты
     CityBase cityBaseTakeOff;// место взлета
@@ -87,6 +87,8 @@ public class LauncherRocketModel {
     public void setListEventDates(List<DateEvent> listEventDates) {
         this.listEventDates = listEventDates;
     }
+
+
 
     @Override
     public String toString() {
