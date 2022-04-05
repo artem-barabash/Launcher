@@ -2,7 +2,6 @@ package gui_forms;
 
 import model.DateEvent;
 import model.LauncherRocketModel;
-import model.StatusLaunch;
 import model.crewmemebers.CrewMember;
 import operations.DBHadler;
 
@@ -10,6 +9,8 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -18,9 +19,6 @@ import java.util.List;
 public class Archive extends JFrame {
     JLabel labelFlight = new JLabel();
     DBHadler dbHadler = new DBHadler();
-
-    public static double wayToOrbite = 0;
-    public static double backWay = 0;
 
     ///текущий полет
 
@@ -48,6 +46,9 @@ public class Archive extends JFrame {
                 return renderer;
             }
         });
+
+
+       ;
 
 
         JScrollPane jcpList = new JScrollPane(jListFlights);
@@ -86,8 +87,6 @@ public class Archive extends JFrame {
         sb.append("Number - " + launcherRocketModel.getNumberFlight() + ".\n" );
         sb.append("Model rocket - " + launcherRocketModel.getModelRocket() + ".\n" );
 
-        //метод расматривает статус запуска и обозначает его цветом
-        sb.append("Launch's status -" + methodShowStatusLaunch(launcherRocketModel.getStatus()) + ".\n");
         //время и события //date_time_table
         //запрос в БД за коллекцией DataEvent
         launcherRocketModel.setListEventDates(dbHadler.selectDateEvents(launcherRocketModel.getNumberFlight()));
@@ -100,21 +99,13 @@ public class Archive extends JFrame {
         //вывод в формуi
         if(launcherRocketModel.getCityBaseTakeOff() != null || launcherRocketModel.getCityBaseLandingSite() != null){
             sb.append("<p>Rocket launch site is " + launcherRocketModel.getCityBaseTakeOff().city + " - " + launcherRocketModel.getCityBaseTakeOff().country + ".</p>\n");
-            if(!launcherRocketModel.getCityBaseLandingSite().city.equals("-") && !launcherRocketModel.getCityBaseLandingSite().country.equals("-")){
-                sb.append("<p>Landing site is " +  launcherRocketModel.getCityBaseLandingSite().city + " - " + launcherRocketModel.getCityBaseLandingSite().country + ".</p>\n");
-            }
-
+            sb.append("<p>Landing site is " +  launcherRocketModel.getCityBaseLandingSite().city + " - " + launcherRocketModel.getCityBaseLandingSite().country + ".</p>\n");
             sb.append("\n");
         }
 
         //расстояние и расход топлива //table - distance
         sb.append("<i>" + dbHadler.selectDataAboutDistanceAndFuelConsumption(launcherRocketModel.getNumberFlight()) +  "</i>");
         sb.append("\n");
-
-
-        if(launcherRocketModel.getStatus().equals(String.valueOf(StatusLaunch.ACCIDENT))) {
-            sb.append("<p style='font-size:10px;color:red;'><i>" + methodShowDistanceBack(wayToOrbite, backWay, launcherRocketModel) + "</i></p>");
-        }
 
             //список экипажа с должностями //table -crew_members
         launcherRocketModel.setCrewMembers(dbHadler.selectArrayListWithCrewMember(launcherRocketModel.getNumberFlight()));
@@ -123,25 +114,13 @@ public class Archive extends JFrame {
         return "<html><pre>" + sb.toString() +  "</pre></html>";
     }
 
-    //показуем дистанцию назад на Землю
-    private String methodShowDistanceBack(double wayToOrbite, double backWay, LauncherRocketModel launcherRocketModel) {
-        double accidentWay = wayToOrbite - backWay;
-
-        if(accidentWay > 15){
-            return "Spacecraft with crew members is " + launcherRocketModel.getModelRocket() + " in outer space.";
-        }else{
-            return "Spacecraft with crew members is " + launcherRocketModel.getModelRocket() + " on Earth.";
-        }
-    }
-
-
     //вставка <li></li>
     private String methodAllocatedDateEventToRows(List<DateEvent> listEventDates) {
         String line = "";
         for(DateEvent dateEvent : listEventDates) line+= "<li>" + dateEvent.getEvent() + " - " + dateEvent.getDateEvent() + ".</li>";
         return line;
     }
-    //список экипажа
+
     private String methodShowCrewMembersList(ArrayList<CrewMember> crewMembers) {
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -155,14 +134,11 @@ public class Archive extends JFrame {
         return "<div>" + caption + stringBuilder.toString() + "</div>";
     }
 
-    //вет надписи статуса
-    private String methodShowStatusLaunch(String status) {
-        String color = null;
+   public static void main(String[] args) throws SQLException {
+        Archive archive = new Archive();
 
-        if(status.equals(String.valueOf(StatusLaunch.SUCCESS))) color = "green";
-        else if(status.equals(String.valueOf(StatusLaunch.ACCIDENT))) color = "red";
-        else if(status.equals(String.valueOf(StatusLaunch.CANCEL))) color = "orange";
-
-        return "<b style='color:" + color +";'>" + status  + "</b>";
+        archive.setSize(700, 500);
+        archive.setResizable(false);
+        archive.setVisible(true);
     }
 }

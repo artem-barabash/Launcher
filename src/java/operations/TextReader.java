@@ -3,7 +3,6 @@ package operations;
 import gui_forms.App;
 import model.CrewMembersList;
 import model.LauncherRocketModel;
-import model.StatusLaunch;
 import model.crewmemebers.*;
 
 import javax.swing.*;
@@ -87,7 +86,7 @@ public class TextReader {
 
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
 
-                    LauncherRocketModel launcherRocketModel = new LauncherRocketModel(numberFlight,  checkTextFile.modelRocket, String.valueOf(StatusLaunch.SUCCESS), CheckTextFile.base, null, quelityConsumption, members, null);
+                    LauncherRocketModel launcherRocketModel = new LauncherRocketModel(numberFlight,  checkTextFile.modelRocket, CheckTextFile.base, null, quelityConsumption, members, null);
                     System.out.println("checkTextFile.modelRocket = " + checkTextFile.modelRocket);
                     System.out.println(launcherRocketModel.toString());
                     try {

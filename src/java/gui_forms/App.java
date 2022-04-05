@@ -1,6 +1,8 @@
 package gui_forms;
 
-import model.*;
+import model.CityBaseLandingSite;
+import model.DataFlight;
+import model.LauncherRocketModel;
 import operations.DBHadler;
 import operations.EventName;
 import operations.LandingCrewAndMachine;
@@ -128,61 +130,6 @@ public class App extends JFrame {
             public void windowClosing(WindowEvent e)
             {
                 //TODO закрытие преждевременное 1.Cancel - удалине из бд 2.Fail все вносится, и CityLanding Space Space, и время аварии.3. если менше чем за 15 км до Земли, то
-                if(launchFact && !landingFact){
-                    //ACCIDENT
-                    try {
-                        //город запуска, без города приземления
-                        //dbHadler.methodInsertCityBase(launcherRocketModel.getNumberFlight(), launcherRocketModel.getCityBaseTakeOff(),new CityBaseLandingSite("-", "-", false));
-                        //TODO UPDATE
-                        //обновляем статус
-                        dbHadler.updateStatusLaunch(launcherRocketModel.getNumberFlight(), String.valueOf(StatusLaunch.ACCIDENT));
-                        //время аварии
-                        dbHadler.methodInsertFactTime(launcherRocketModel.getNumberFlight(), String.valueOf(StatusLaunch.ACCIDENT));
-                        // дистанция и топиво
-                        dbHadler.methodInsertDistanceAndQuelity(launcherRocketModel.getNumberFlight(), currentDistance,
-                                Constants.accidentWay, launcherRocketModel.getQuelityConsumption() , currentQuelityConsumption);
-                        System.out.println("currentDistance = " + currentDistance);
-                        System.out.println("currentQuelityConsumption" + currentQuelityConsumption);
-
-
-                        if(!returnFact){
-                            //TODO UPDATE
-                            //dbHadler.methodInsertCityBase(launcherRocketModel.getNumberFlight(), launcherRocketModel.getCityBaseTakeOff(),new CityBaseLandingSite("-", "-", false));
-                            //В случае аварии при возвращениие на Землю, вносим топливо, и проделанный путь, и аварийный путь назад.
-                            dbHadler.methodInsertCityBase(launcherRocketModel.getNumberFlight(), launcherRocketModel.getCityBaseTakeOff(),
-                                    new CityBaseLandingSite("-", "-", false));
-                            //TODO? в случае аварии судно остается в космосе, а если меньше 15км на землей, но падет в город приземления
-                        } else {
-
-                            //Если возврата не было то возратный путь - 0. Т.к корабль где-то в космосе
-                        }
-
-
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
-                    }
-
-
-
-
-                    JOptionPane.showMessageDialog(null, "This is accident!");
-
-                }else if(!launchFact){
-                    //CANCEL
-                    try {
-                        //обновлем статус - отмена полету
-                        dbHadler.updateStatusLaunch(launcherRocketModel.getNumberFlight(), String.valueOf(StatusLaunch.CANCEL));
-                        //удаляем экипаж отмененого полета
-                        dbHadler.deleteCrewMembers(launcherRocketModel.getNumberFlight());
-                        //время отмены
-                        dbHadler.methodInsertFactTime(launcherRocketModel.getNumberFlight(), String.valueOf(StatusLaunch.CANCEL));
-
-                        dbHadler.methodInsertCityBase(launcherRocketModel.getNumberFlight(), launcherRocketModel.getCityBaseTakeOff(),
-                                new CityBaseLandingSite("-", "-", false));
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
-                    }
-                }
             }
         });
 
@@ -193,7 +140,7 @@ public class App extends JFrame {
                     if (App.run == false) {
 
                         //Фиксация события старт
-                        dbHadler.methodInsertFactTime(launcherRocketModel.getNumberFlight(), String.valueOf(EventName.LAUNCH));
+                        dbHadler.methodInsertFactTime(launcherRocketModel.getNumberFlight(), EventName.LAUNCH);
                         App.run = true;
                         launchFact = true;
                         new LaunchThread();
@@ -217,7 +164,7 @@ public class App extends JFrame {
                         if(currentDistance > 100){
                             App.run = false;
                             try {
-                                dbHadler.methodInsertFactTime(launcherRocketModel.getNumberFlight(), String.valueOf(EventName.STOP_ON_ORBITE));
+                                dbHadler.methodInsertFactTime(launcherRocketModel.getNumberFlight(), EventName.STOP_ON_ORBITE);
                                 changePictureForFlight("satellite.jpg");
                                 //Фиксация события стоп на орбите
                                 coveredDistance = currentDistance;
@@ -257,7 +204,7 @@ public class App extends JFrame {
 
                                 try {
                                     // Фиксация события начала возрата на Землю
-                                    dbHadler.methodInsertFactTime(launcherRocketModel.getNumberFlight(), String.valueOf(EventName.LEFT_ON_EARTH));
+                                    dbHadler.methodInsertFactTime(launcherRocketModel.getNumberFlight(), EventName.LEFT_ON_EARTH);
                                     launcherRocketModel.setCityBaseLandingSite(cityBaseLandingSite);
                                     //вставлем в бд город запуска, и город куда планируем приземлить
                                     dbHadler.methodInsertCityBase(launcherRocketModel.getNumberFlight(), launcherRocketModel.getCityBaseTakeOff(), launcherRocketModel.getCityBaseLandingSite());
