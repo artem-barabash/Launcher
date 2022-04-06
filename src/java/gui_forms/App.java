@@ -126,12 +126,15 @@ public class App extends JFrame {
                 //TODO закрытие преждевременное 1.Cancel - удалине из бд 2.Fail все вносится, и CityLanding Space Space, и время аварии.3. если менше чем за 15 км до Земли, то
                 if (launchFact && !landingFact) {
                     try {
+                        //обновляем статус
                         dbHadler.updateStatusLaunch(launcherRocketModel.getNumberFlight(), String.valueOf(StatusLaunch.ACCIDENT));
+                        //фиксируем время и факт аварии
                         dbHadler.methodInsertFactTime(launcherRocketModel.getNumberFlight(), String.valueOf(StatusLaunch.ACCIDENT));
+                        //фиксуем пройденую дистацию и расход топлива
                         dbHadler.methodInsertDistanceAndQuelity(launcherRocketModel.getNumberFlight(), currentDistance, Constants.accidentWay, launcherRocketModel.getQuelityConsumption(), App.currentQuelityConsumption);
-                        System.out.println("currentDistance = " + currentDistance);
-                        System.out.println("currentQuelityConsumption" + currentQuelityConsumption);
+
                         if (!returnFact) {
+                            //если команды возрата не было то ставим в базе --
                             dbHadler.methodInsertCityBase(launcherRocketModel.getNumberFlight(), launcherRocketModel.getCityBaseTakeOff(), new CityBaseLandingSite("-", "-", false));
                         }
                     } catch (SQLException ex) {
@@ -141,9 +144,13 @@ public class App extends JFrame {
                     JOptionPane.showMessageDialog(null, "This is accident!");
                 } else if (!launchFact) {
                     try {
+                        //обновлем статус
                         dbHadler.updateStatusLaunch(launcherRocketModel.getNumberFlight(), String.valueOf(StatusLaunch.CANCEL));
+                        //удаляем экипаж отмененого полета
                         dbHadler.deleteCrewMembers(launcherRocketModel.getNumberFlight());
+                        //фиксируем время и факт отмены
                         dbHadler.methodInsertFactTime(launcherRocketModel.getNumberFlight(), String.valueOf(StatusLaunch.CANCEL));
+                        //если команды возрата не было то ставим в базе --
                         dbHadler.methodInsertCityBase(launcherRocketModel.getNumberFlight(), launcherRocketModel.getCityBaseTakeOff(),
                                 new CityBaseLandingSite("-", "-", false));
                     } catch (SQLException ex) {
