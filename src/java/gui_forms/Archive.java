@@ -2,6 +2,7 @@ package gui_forms;
 
 import model.DateEvent;
 import model.LauncherRocketModel;
+import model.StatusLaunch;
 import model.crewmemebers.CrewMember;
 import operations.DBHadler;
 
@@ -9,8 +10,6 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -20,6 +19,8 @@ public class Archive extends JFrame {
     JLabel labelFlight = new JLabel();
     DBHadler dbHadler = new DBHadler();
 
+    public static double wayToOrbite = 0;
+    public static double backWay = 0;
     ///текущий полет
 
     public Archive() throws SQLException {
@@ -46,10 +47,6 @@ public class Archive extends JFrame {
                 return renderer;
             }
         });
-
-
-       ;
-
 
         JScrollPane jcpList = new JScrollPane(jListFlights);
         container.add(jcpList);
@@ -86,6 +83,7 @@ public class Archive extends JFrame {
         //подача на вывод в html
         sb.append("Number - " + launcherRocketModel.getNumberFlight() + ".\n" );
         sb.append("Model rocket - " + launcherRocketModel.getModelRocket() + ".\n" );
+        sb.append("Launch's status -" + methodShowStatusLaunch(launcherRocketModel.getStatus()) + ".\n");
 
         //время и события //date_time_table
         //запрос в БД за коллекцией DataEvent
@@ -106,6 +104,8 @@ public class Archive extends JFrame {
         //расстояние и расход топлива //table - distance
         sb.append("<i>" + dbHadler.selectDataAboutDistanceAndFuelConsumption(launcherRocketModel.getNumberFlight()) +  "</i>");
         sb.append("\n");
+        //показатель то где сейчас аппарат
+        sb.append("<p style='font-size:10px;color:red;'><i>" + methodShowDistanceBack(wayToOrbite, backWay, launcherRocketModel.getModelRocket()) + "</i></p>");
 
             //список экипажа с должностями //table -crew_members
         launcherRocketModel.setCrewMembers(dbHadler.selectArrayListWithCrewMember(launcherRocketModel.getNumberFlight()));
@@ -121,6 +121,7 @@ public class Archive extends JFrame {
         return line;
     }
 
+    //єкипажа экипажа
     private String methodShowCrewMembersList(ArrayList<CrewMember> crewMembers) {
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -134,11 +135,24 @@ public class Archive extends JFrame {
         return "<div>" + caption + stringBuilder.toString() + "</div>";
     }
 
-   public static void main(String[] args) throws SQLException {
-        Archive archive = new Archive();
+    //цвет надписи статуса
+    private String methodShowStatusLaunch(String status) {
+        String color = null;
+        if (status.equals(String.valueOf(StatusLaunch.SUCCESS))) {
+            color = "green";
+        } else if (status.equals(String.valueOf(StatusLaunch.ACCIDENT))) {
+            color = "red";
+        } else if (status.equals(String.valueOf(StatusLaunch.CANCEL))) {
+            color = "orange";
+        }
 
-        archive.setSize(700, 500);
-        archive.setResizable(false);
-        archive.setVisible(true);
+        return "<b style='color:" + color + ";'>" + status + "</b>";
+    }
+
+    //обратный путь после аварии
+    private String methodShowDistanceBack(double wayToOrbite, double backWay, String model) {
+        double accidentWay = wayToOrbite - backWay;
+        return accidentWay > 15 ? "Spacecraft with crew members is " + model + " in outer space."
+                : "Spacecraft with crew members is " + model + " on Earth.";
     }
 }
