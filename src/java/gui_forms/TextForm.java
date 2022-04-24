@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 public class TextForm extends JFrame {
 
-    static TextForm textForm;
+    public static TextForm textForm;
 
 
     private JPanel panelMain;

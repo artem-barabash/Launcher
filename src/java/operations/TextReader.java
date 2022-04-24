@@ -24,20 +24,13 @@ public class TextReader {
     static int numberMember = 0;
 
     //проверка текста на соотвествие правил оформления
-    public  CheckTextFile checkTextFile;
+    //public  CheckTextFile checkTextFile;
     DBHadler dbHadler = new DBHadler();
 
 
     public TextReader() {
     }
 
-    public CheckTextFile getCheckTextFile() {
-        return checkTextFile;
-    }
-
-    public void setCheckTextFile(CheckTextFile checkTextFile) {
-        this.checkTextFile = checkTextFile;
-    }
 
     public static String read(String filePath) {
         StringBuilder sb = new StringBuilder();
@@ -59,14 +52,15 @@ public class TextReader {
     }
     public  void runTextReader(String str) throws Exception {
         String text = read(str);
-        checkTextFile = new CheckTextFile(text);
 
-        if(checkTextFile.indicatorAll){
+
+        methodToolSearchPositionsInTheText(text);
+        if(CheckTextFile.isIndicatorAll(text)){
             //1.Находим в списком экипажа по должностям
-            methodToolSearchWordsinTheText(text);
+
             System.out.println(members.size());
             if(members.checkIdeticalItemCrewMember() && members.checkListOfMemberAboutPositions()
-                    && members.makeNextOperations && CheckTextFile.methodFindQuantityPersons(text) && CheckTextFile.methodCheckCityBaseInTheText(text)){
+                    && members.makeNextOperations){
                 //3.Находим номер полета и путевку
                 int numberFlight = methodSearhNumberFlightIntheText(text, "order");
 
@@ -75,8 +69,8 @@ public class TextReader {
                     JOptionPane.showMessageDialog(null, "This order's number was in base!");
                 }else{
                     //2.Находим город запуска ракеты
-                    String cityBasetakeOff = methodSearchCityBaseInTheText(text);
-                    System.out.println("cityBasetakeOff = " + cityBasetakeOff);
+                    String cityBaseTakeOff = methodSearchCityBaseInTheText(text);
+                    System.out.println("cityBasetakeOff = " + cityBaseTakeOff);
 
                     System.out.println("numberFlight = " +numberFlight);
                     //int numberVoucher = methodSearhNumberFlightIntheText(text, "voucher");
@@ -87,8 +81,8 @@ public class TextReader {
 
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
 
-                    LauncherRocketModel launcherRocketModel = new LauncherRocketModel(numberFlight,  checkTextFile.modelRocket, String.valueOf(StatusLaunch.SUCCESS), CheckTextFile.base, null, quelityConsumption, members, null);
-                    System.out.println("checkTextFile.modelRocket = " + checkTextFile.modelRocket);
+                    LauncherRocketModel launcherRocketModel = new LauncherRocketModel(numberFlight,  CheckTextFile.modelRocket, String.valueOf(StatusLaunch.SUCCESS), CheckTextFile.base, null, quelityConsumption, members, null);
+                    System.out.println("checkTextFile.modelRocket = " + CheckTextFile.modelRocket);
                     System.out.println(launcherRocketModel.toString());
                     try {
                         app = new App(launcherRocketModel);
@@ -100,9 +94,6 @@ public class TextReader {
                     app.setVisible(true);
                 }
             }
-
-        }else {
-            JOptionPane.showMessageDialog(null, "Data aren't correctly!");
         }
 
         //TODO  Проверка текстового файла на правильность составления: ключевые слова, абзацы
@@ -121,7 +112,7 @@ public class TextReader {
     }
 
     //1.Находим в списком экипажа по должностям
-    static void methodToolSearchWordsinTheText(String text) throws Exception {
+    static void methodToolSearchPositionsInTheText(String text) throws Exception {
         String listCrewMembersPositions[] = {"Commander", "Engineer", "Gunner", "Doctor", "Tourist"};
 
         char[] strToCharArray = text.toCharArray();

@@ -7,48 +7,32 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CheckTextFile {
-    boolean indicatorAll = false;
-    String modelRocket = null;
+    static String modelRocket = null;
     static CityBase base = null;
 
-    public CheckTextFile(String textFile) {
-        methodCheckCountWords(textFile);
-        methodCheckCountSentences(textFile);
-        methodCheckParagraghInText(textFile);
-        methodCheckCaptions(textFile);
-        methodCheckPresenceOfSentenceInTheText(textFile);
-        methodCheckModelRocket(textFile);
-        //methodCheckCityBaseInTheText(textFile);
-        checkPositionAndGradeOfCommanderChief(textFile);
-    }
-
-
-    public boolean isIndicatorAll() {
-        return indicatorAll;
-    }
-
-    public void setIndicatorAll(boolean indicatorAll) {
-        this.indicatorAll = indicatorAll;
+    public static boolean isIndicatorAll(String currentText) {
+        return methodCheckCountWords(currentText) && methodCheckCountSentences(currentText)
+         && methodCheckParagraphsInText(currentText) && methodCheckCaptions(currentText)
+        && methodCheckPresenceOfSentenceInTheText(currentText)  && methodCheckModelRocket(currentText)
+        && methodCheckCityBaseInTheText(currentText) && methodFindQuantityPersons(currentText) &&
+                checkPositionAndGradeOfCommanderChief(currentText);
     }
 
     // 1)к-ство слов
-    void methodCheckCountWords(String str) {
+    private static boolean methodCheckCountWords(String str) {
         String[] currentTextDoc = str.split(" ");
 
-        if (currentTextDoc.length > 100 && currentTextDoc.length < 200) {
-            indicatorAll = true;
-        } else {
+        if (currentTextDoc.length > 100 && currentTextDoc.length < 200) return true;
+        else {
             JOptionPane.showMessageDialog(null, "The text must have at least 100, and not more than 200 words!");
-            indicatorAll = false;
+            return false;
         }
     }
 
     //2)к-ств предложений
-    void methodCheckCountSentences(String str) {
+    private static boolean  methodCheckCountSentences(String str) {
         char[] currentTextChar = str.toCharArray();
         int countSentence = 0;
-
-        String sentence = "";
 
         Pattern pat = Pattern.compile("[-]?[0-9]+(.[0-9]+)?");
         Matcher matcher;
@@ -75,36 +59,37 @@ public class CheckTextFile {
             }
         }
 
-        indicatorAll = countSentence >= 12 && countSentence <= 17 ? true : false;
-        if (!indicatorAll) {
+        if (countSentence >= 12 && countSentence <= 17) return true;
+        else {
             JOptionPane.showMessageDialog(null, "The text must have at least 12 sentences! You have to put dots in sentences.");
+            return false;
         }
     }
 
     // 3)к-ство абзацев
-    void methodCheckParagraghInText(String str) {
+    private static boolean methodCheckParagraphsInText(String str) {
         char[] currentTextChar = str.toCharArray();
-        int countParagragh = 0;
+        int countParagraphs = 0;
 
         for (int i = 0; i < currentTextChar.length; i++) {
             if (currentTextChar[i] == '.' || currentTextChar[i] == ':') {
                 if (currentTextChar[i + 1] == '\n') {
-                    countParagragh++;
+                    countParagraphs++;
                 }
             }
         }
 
-        indicatorAll = countParagragh >= 10 && countParagragh <= 15 ? true : false;
-
-        if (!indicatorAll) {
+        if(countParagraphs >= 10 && countParagraphs <= 15) return true;
+        else {
             JOptionPane.showMessageDialog(null, "There must be at least 10 paragraphs in the text!");
+            return false;
         }
     }
 
     // 4)Заголовки The order  и voucher
-    void methodCheckCaptions(String str) {
+    private static boolean methodCheckCaptions(String str) {
         String allText = str.toLowerCase();
-        String textArray[] = allText.split(" ");
+        String[] textArray = allText.split(" ");
         operations.NumericClass numericClass = new operations.NumericClass();
 
         boolean resultCheck = false;
@@ -131,12 +116,12 @@ public class CheckTextFile {
             JOptionPane.showMessageDialog(null, "There must be 2 captions: The order and voucher!");
         }
 
-        indicatorAll = resultCheck;
+        return resultCheck;
 
     }
 
     // 5) предложения которые начинаються с ключевых слов.
-    void methodCheckPresenceOfSentenceInTheText(String str) {
+    private static boolean methodCheckPresenceOfSentenceInTheText(String str) {
         boolean isEmpty = false;
 
         String[] listConcreteSentence = {
@@ -167,13 +152,14 @@ public class CheckTextFile {
             JOptionPane.showMessageDialog(null, "The text must be write structured!");
         }
         //System.out.println("isEmpty = " + isEmpty);
-        indicatorAll = isEmpty;
+
         if (!isEmpty) JOptionPane.showMessageDialog(null, "The sentences must be correct order!");
 
+        return isEmpty;
     }
 
     //5.1 Проверка наличия приделожений
-    private boolean methodCheckSentence(String str, String[] listConcreteSentence) {
+    private static boolean methodCheckSentence(String str, String[] listConcreteSentence) {
         for (int i = 0; i < listConcreteSentence.length; i++) {
             if (str.contains(listConcreteSentence[i])) return true;
              else break;
@@ -182,7 +168,7 @@ public class CheckTextFile {
     }
 
     //6 наличее модели ракеты
-    void methodCheckModelRocket(String str) {
+    private static boolean methodCheckModelRocket(String str) {
         String allText = str.toLowerCase();
         String textArray[] = allText.split(" ");
 
@@ -201,8 +187,8 @@ public class CheckTextFile {
                 if(indexNameModel != -1) break;
             }
             if (indexNameModel == -1){
-                indicatorAll = false;
                 JOptionPane.showMessageDialog(null, "There is'nt model of rocket!");
+                return false;
             }
         }else {
             //массив чтобы понять исходный регистр букв, если a/the, с мальнькой буквы тогда error
@@ -212,23 +198,24 @@ public class CheckTextFile {
 
                 if(numberModel != 0){
                     modelRocket = textArrayUpperCase[indexNameModel] + " " + numberModel;
-                    indicatorAll = true;
+                    return true;
                 }else {
-                    indicatorAll = false;
                     JOptionPane.showMessageDialog(null, "The model haven't number!");
+                    return false;
                 }
             } else {
-                indicatorAll = false;
                 JOptionPane.showMessageDialog(null, "There is'nt article before model's name!");
+                return false;
             }
         }
+        return false;
     }
 
     // 8) число экипажа буквами
-    static boolean methodFindQuantityPersons(String str){
+    private static boolean methodFindQuantityPersons(String str){
         String allText = str.toLowerCase();
         String textArray[] = allText.split(" ");
-        operations.NumericClass numericClass = new operations.NumericClass();
+        NumericClass numericClass = new NumericClass();
 
         int indexWordPeople = numericClass.searchElement(0, "people", textArray);
 
@@ -241,8 +228,13 @@ public class CheckTextFile {
             if(nameNumbers[i].equals(number)) numberFromList = i;
         }
 
+        System.out.println("TextReader.numberMember=" + TextReader.numberMember);
+        System.out.println("numberFromList=" + numberFromList);
+
         //сравниваем к-сть экипажа с числом в тексте + ищем : возле слова people
-        if((operations.TextReader.numberMember == numberFromList) && (searchCharacterInStringIteration(":", textArray[indexWordPeople]) || searchCharacterInStringIteration( ":", textArray[indexWordPeople + 1]))) return true;
+        if((TextReader.numberMember == numberFromList) &&
+                (searchCharacterInStringIteration(":", textArray[indexWordPeople]) ||
+                        searchCharacterInStringIteration( ":", textArray[indexWordPeople + 1]))) return true;
         else JOptionPane.showMessageDialog(null, "The quanlity of crew was availabled no correctly!");
 
         return false;
@@ -303,7 +295,7 @@ public class CheckTextFile {
     }
 
     // 10) должность и звание главнокомандуещеего
-     void checkPositionAndGradeOfCommanderChief(String str){
+    private static boolean checkPositionAndGradeOfCommanderChief(String str){
         String textArray[] = str.split("");
 
         String titlesForPositionCommander[] = {"The Commander in Chief - ", "The Commander in Chief\n"};
@@ -337,12 +329,13 @@ public class CheckTextFile {
             JOptionPane.showMessageDialog(null, "The order must include the title, name, and surname of the commander-in-chief!");
         }
 
-        indicatorAll = isEmpty;
-        if(!indicatorAll) JOptionPane.showMessageDialog(null, "The position of commander is not correct.");
+        if(!isEmpty) JOptionPane.showMessageDialog(null, "The position of commander is not correct.");
+        return isEmpty;
+
     }
 
     //10.1
-    private String returnSentenceWithCommander(String tempText, int indexFromFirstArray){
+    private static String returnSentenceWithCommander(String tempText, int indexFromFirstArray){
         String sentence = "";
         char[] strToCharArray = tempText.toCharArray();
 
@@ -356,9 +349,9 @@ public class CheckTextFile {
     }
 
     //10.2
-    private String parseDataPositionFromString(String sentence){
+    private static String parseDataPositionFromString(String sentence){
         // звание которое может быть у главнокомандуещего
-        String namePositions[] = {"General of Army", "Сolonel of Aviation"};
+        String[] namePositions = {"General of Army", "Сolonel of Aviation"};
         String currentDegree = null;
         String first_name = "";
         String last_name = "";
@@ -418,7 +411,7 @@ public class CheckTextFile {
     }
 
     //Наличение числа int. ищет до конкретного элемент
-    int findIntegerNumberToSymbol(int index, String endStrLine, String textArray[]){
+    static int findIntegerNumberToSymbol(int index, String endStrLine, String textArray[]){
         int result = 0;
         Pattern pat = Pattern.compile("[-]?[0-9]+(.[0-9]+)?");
         Matcher matcher;
@@ -442,7 +435,7 @@ public class CheckTextFile {
     }
 
     //наличие числа double
-    double findDoubleNumber(int index, String endStrLine, String textArray[]){
+    static double findDoubleNumber(int index, String endStrLine, String textArray[]){
         double result = 0;
         Pattern pat = Pattern.compile("[-]?[0-9]+(.[0-9]+)?");
         Matcher matcher;
@@ -476,26 +469,7 @@ public class CheckTextFile {
     private static boolean searchCharacterInStringIteration(String regex, String str){
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(str);
-        boolean result = matcher.find();
 
-        return result;
-    }
-
-    static int parseIntegerFromText(String text){
-        StringBuffer num = new StringBuffer();
-
-        for (int i=0; i<text.length(); i++)
-        {
-            if (Character.isDigit(text.charAt(i)))
-                num.append(text.charAt(i));
-        }
-
-        return  Integer.parseInt(String.valueOf(num));
-    }
-
-    static int searchWordAndReturnIndex(String element, String arr[]){
-
-
-        return -1;
+        return matcher.find();
     }
 }
