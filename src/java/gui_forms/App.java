@@ -141,7 +141,7 @@ public class App extends JFrame {
                         ex.printStackTrace();
                     }
 
-                    JOptionPane.showMessageDialog(null, "This is accident!");
+                    JOptionPane.showMessageDialog(app, "This is accident!", "Alert", JOptionPane.WARNING_MESSAGE);
                 } else if (!launchFact) {
                     try {
                         //обновлем статус
@@ -173,7 +173,7 @@ public class App extends JFrame {
                         new LaunchThread();
 
                     } else {
-                        JOptionPane.showMessageDialog(null, "The rocket has launched already!");
+                        JOptionPane.showMessageDialog(app, "The rocket has launched already!");
                     }
                 }
             }
@@ -184,7 +184,7 @@ public class App extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (App.run == false) {
                     if(launchFact == false){
-                        JOptionPane.showMessageDialog(null, "The rocket hasn't lanched yet.");
+                        JOptionPane.showMessageDialog(app, "The rocket hasn't lanched yet.");
                     }
                 } else {
                     if(returnFact == false){
@@ -203,7 +203,7 @@ public class App extends JFrame {
 
                             showDataFlight();
 
-                        } else JOptionPane.showMessageDialog(null, "The distance is too short, that we can stop! If distance more 100 km we can stop.");
+                        } else JOptionPane.showMessageDialog(app, "The distance is too short, that we can stop! If distance more 100 km we can stop.", "Alert",JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
@@ -213,8 +213,8 @@ public class App extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if(launchFact == true){
                     if (App.run == true){
-                        if(returnFact) JOptionPane.showMessageDialog(null, "We are returning to the Earth now!");
-                        else JOptionPane.showMessageDialog(null, "We need firstly stop rocket!");
+                        if(returnFact) JOptionPane.showMessageDialog(app, "We are returning to the Earth now!");
+                        else JOptionPane.showMessageDialog(app, "We need firstly stop rocket!", "Alert", JOptionPane.ERROR_MESSAGE);
 
                     } else {
                         if(returnFact == false){
@@ -226,7 +226,7 @@ public class App extends JFrame {
                                 } catch (InterruptedException ex) {
                                     ex.printStackTrace();
                                 }
-                                JOptionPane.showMessageDialog(null, cityBaseLandingSite.toString());
+                                JOptionPane.showMessageDialog(app, cityBaseLandingSite.toString());
                                 new ReturnOnEarthThread(currentDistance, currentQuelityConsumption, cityBaseLandingSite, launcherRocketModel.getNumberFlight());
 
                                 try {
@@ -240,12 +240,12 @@ public class App extends JFrame {
                                 }
                             } else{
                                 returnFact = false;
-                                JOptionPane.showMessageDialog(null, "Try, again!");
+                                JOptionPane.showMessageDialog(app, "Try, again!", "Alert", JOptionPane.ERROR_MESSAGE);
                             }
                         }
                     }
                 }else {
-                    JOptionPane.showMessageDialog(null, "This function isn't available now!!");
+                    JOptionPane.showMessageDialog(app, "This function isn't available now!!","Alert", JOptionPane.ERROR_MESSAGE);
                 }
 
             }

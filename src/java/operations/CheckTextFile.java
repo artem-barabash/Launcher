@@ -1,5 +1,6 @@
 package operations;
 
+import gui_forms.TextForm;
 import model.CityBase;
 
 import javax.swing.*;
@@ -19,7 +20,7 @@ public class CheckTextFile {
     }
 
     // 1)к-ство слов
-    private static boolean methodCheckCountWords(String str) {
+    public static boolean methodCheckCountWords(String str) {
         String[] currentTextDoc = str.split(" ");
 
         if (currentTextDoc.length > 100 && currentTextDoc.length < 200) return true;
@@ -30,7 +31,7 @@ public class CheckTextFile {
     }
 
     //2)к-ств предложений
-    private static boolean  methodCheckCountSentences(String str) {
+    public static boolean  methodCheckCountSentences(String str) {
         char[] currentTextChar = str.toCharArray();
         int countSentence = 0;
 
@@ -67,7 +68,7 @@ public class CheckTextFile {
     }
 
     // 3)к-ство абзацев
-    private static boolean methodCheckParagraphsInText(String str) {
+    public static boolean methodCheckParagraphsInText(String str) {
         char[] currentTextChar = str.toCharArray();
         int countParagraphs = 0;
 
@@ -87,12 +88,10 @@ public class CheckTextFile {
     }
 
     // 4)Заголовки The order  и voucher
-    private static boolean methodCheckCaptions(String str) {
+    public static boolean methodCheckCaptions(String str) {
         String allText = str.toLowerCase();
         String[] textArray = allText.split(" ");
         operations.NumericClass numericClass = new operations.NumericClass();
-
-        boolean resultCheck = false;
 
         int indexTheOrder = numericClass.searchElement(0, "order", textArray);
         int indexVoucher = numericClass.searchElement(0, "voucher", textArray);
@@ -102,26 +101,26 @@ public class CheckTextFile {
             if (textArray[indexTheOrder - 1].equals("the") && findIntegerNumber(indexTheOrder, textArray) != 0) {
                 if (indexVoucher != -1) {
                     if (findDoubleNumber(indexVoucher, "kg", textArray) == 0) {
-                        resultCheck = false;
-                        JOptionPane.showMessageDialog(null, "There must be quelity of consumption!");
-                    } else {
-                        resultCheck = true;
-                    }
+                        JOptionPane.showMessageDialog(TextForm.textForm, "There must be quelity of consumption!","Alert", JOptionPane.ERROR_MESSAGE);
+                        return false;
+
+                    } else return true;
+
                 } else {
-                    resultCheck = false;
-                    JOptionPane.showMessageDialog(null, "There must be 2 captions: The order and voucher!");
+                    JOptionPane.showMessageDialog(TextForm.textForm, "There must be 2 captions: The order and voucher!","Alert", JOptionPane.ERROR_MESSAGE);
+                    return false;
+
                 }
             }
-        } else {
-            JOptionPane.showMessageDialog(null, "There must be 2 captions: The order and voucher!");
-        }
+        } else JOptionPane.showMessageDialog(TextForm.textForm, "There must be 2 captions: The order and voucher!","Alert", JOptionPane.ERROR_MESSAGE);
 
-        return resultCheck;
+
+        return false;
 
     }
 
     // 5) предложения которые начинаються с ключевых слов.
-    private static boolean methodCheckPresenceOfSentenceInTheText(String str) {
+    public static boolean methodCheckPresenceOfSentenceInTheText(String str) {
         boolean isEmpty = false;
 
         String[] listConcreteSentence = {
@@ -132,47 +131,56 @@ public class CheckTextFile {
                 "of fuel for flight №", "The Commander in Chief\n"
         };
 
-        String textArray[] = str.split("");
-        String temp = "";
+        String[] textArray = str.split("");
+        StringBuilder temp = new StringBuilder();
 
         if (methodCheckSentence(str, listConcreteSentence)) {
             for (int i = 0; i < listConcreteSentence.length; i++) {
                 for (int j = 0; j < textArray.length; j++) {
 
-                    temp += textArray[j];
+                    temp.append(textArray[j]);
                     //если отрезки пределожений з массива соовпадают в именно заданной последовательности в listConcreteSentence
-                    if (temp.contains(listConcreteSentence[i])) {
+                    //TODO работает не корректно
+                    if (temp.toString().contains(listConcreteSentence[i])) {
                         if (j == 0) isEmpty = false;
                         else isEmpty = true;
                         break;
                     }
                 }
             }
+            /*for(int i = 0; i < listConcreteSentence.length; i++){
+                if(str.contains(listConcreteSentence[i])){
+                    if(i != numericClass.searchElement(0, listConcreteSentence[i], listConcreteSentence)) {
+                        isEmpty = false;
+                        break;
+                    }else isEmpty = true;
+                }
+            }*/
         } else {
-            JOptionPane.showMessageDialog(null, "The text must be write structured!");
+            JOptionPane.showMessageDialog(TextForm.textForm, "The text must be write structured!");
         }
         //System.out.println("isEmpty = " + isEmpty);
 
-        if (!isEmpty) JOptionPane.showMessageDialog(null, "The sentences must be correct order!");
+        if (!isEmpty) JOptionPane.showMessageDialog(TextForm.textForm, "The sentences must be correct order!");
 
         return isEmpty;
     }
 
     //5.1 Проверка наличия приделожений
-    private static boolean methodCheckSentence(String str, String[] listConcreteSentence) {
-        for (int i = 0; i < listConcreteSentence.length; i++) {
-            if (str.contains(listConcreteSentence[i])) return true;
-             else break;
+    public static boolean methodCheckSentence(String str, String[] listConcreteSentence) {
+        for (String s : listConcreteSentence) {
+            if (str.contains(s)) return true;
+            else break;
         }
         return false;
     }
 
     //6 наличее модели ракеты
-    private static boolean methodCheckModelRocket(String str) {
+    public static boolean methodCheckModelRocket(String str) {
         String allText = str.toLowerCase();
-        String textArray[] = allText.split(" ");
+        String[] textArray = allText.split(" ");
 
-        String modelsRocket[] = {"falcon", "dnipro", "launcher_one"};
+        String[] modelsRocket = {"falcon", "dnipro", "launcher_one"};
 
         int indexNameModel = 0;
 
@@ -187,12 +195,12 @@ public class CheckTextFile {
                 if(indexNameModel != -1) break;
             }
             if (indexNameModel == -1){
-                JOptionPane.showMessageDialog(null, "There is'nt model of rocket!");
+                JOptionPane.showMessageDialog(TextForm.textForm, "There is'nt model of rocket!");
                 return false;
             }
         }else {
             //массив чтобы понять исходный регистр букв, если a/the, с мальнькой буквы тогда error
-            String textArrayUpperCase[] = str.split(" ");
+            String[] textArrayUpperCase = str.split(" ");
             if(searchWordEqualsOrContains(textArrayUpperCase[indexNameModel - 1],"A") || searchWordEqualsOrContains(textArrayUpperCase[indexNameModel - 1],"The")){
                 int numberModel = findIntegerNumberToSymbol(indexNameModel, "rocket", textArray);
 
@@ -200,7 +208,7 @@ public class CheckTextFile {
                     modelRocket = textArrayUpperCase[indexNameModel] + " " + numberModel;
                     return true;
                 }else {
-                    JOptionPane.showMessageDialog(null, "The model haven't number!");
+                    JOptionPane.showMessageDialog(TextForm.textForm, "The model haven't number!", "Alert", JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
             } else {
@@ -212,16 +220,16 @@ public class CheckTextFile {
     }
 
     // 8) число экипажа буквами
-    private static boolean methodFindQuantityPersons(String str){
+    public static boolean methodFindQuantityPersons(String str){
         String allText = str.toLowerCase();
-        String textArray[] = allText.split(" ");
+        String[] textArray = allText.split(" ");
         NumericClass numericClass = new NumericClass();
 
         int indexWordPeople = numericClass.searchElement(0, "people", textArray);
 
         String number = textArray[indexWordPeople - 1];
 
-        String nameNumbers[] = {"zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"};
+        String[] nameNumbers = {"zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"};
         int numberFromList = 0;
 
         for(int i = 0; i < nameNumbers.length; i++){
@@ -241,9 +249,9 @@ public class CheckTextFile {
     }
 
     // 9)место запуска
-    static boolean methodCheckCityBaseInTheText(String str) {
+    public static boolean methodCheckCityBaseInTheText(String str) {
         String allText = str.toLowerCase();
-        String textArray[] = allText.split(" ");
+        String[] textArray = allText.split(" ");
         boolean isCorrectly = false;
 
         operations.NumericClass numericClass = new operations.NumericClass();
@@ -253,12 +261,14 @@ public class CheckTextFile {
         String sentence = "";
 
         if (indexLaunch != -1) {
+            StringBuilder sentenceBuilder = new StringBuilder();
             for (int i = indexLaunch; i < textArray.length; i++) {
                 if (searchCharacterInStringIteration("\\.", textArray[i])) {
-                    sentence += textArray[i] + " ";
+                    sentenceBuilder.append(textArray[i]).append(" ");
                     break;
-                } else sentence += textArray[i] + " ";
+                } else sentenceBuilder.append(textArray[i]).append(" ");
             }
+            sentence = sentenceBuilder.toString();
         } else{
             JOptionPane.showMessageDialog(null, "The text wasn't written correctly!");
         }
@@ -270,17 +280,21 @@ public class CheckTextFile {
             isCorrectly = methodCheckBaseForLaunch(parseCity, parseCountry);
 
             if(isCorrectly) base = new CityBase(parseCity, parseCountry);
-            else JOptionPane.showMessageDialog(null, "Please, enter the launch city correctly!\n" +
-                    "The list of spaceports:\n"+
-                    "Korotych - Ukraine;\n"+ "Paris - France;\n"+
-                    "New York - USA;\n" + "Rio de Janeiro - Brazil;\n");
+            else JOptionPane.showMessageDialog(null, """
+                    Please, enter the launch city correctly!
+                    The list of spaceports:
+                    Korotych - Ukraine;
+                    Paris - France;
+                    New York - USA;
+                    Rio de Janeiro - Brazil;
+                    """);
         }
 
         return isCorrectly;
     }
 
     //9.1 проверка города, на соответсвие с зарегистрированными базами
-     static boolean methodCheckBaseForLaunch(String city, String country){
+    public static boolean methodCheckBaseForLaunch(String city, String country){
         CityBase citiesBaseArray [] = {
                 new CityBase("Korotych", "Ukraine"), new CityBase("Paris", "France"),
                 new CityBase("New York", "USA"), new CityBase("Rio de Janeiro", "Brazil")
@@ -295,35 +309,35 @@ public class CheckTextFile {
     }
 
     // 10) должность и звание главнокомандуещеего
-    private static boolean checkPositionAndGradeOfCommanderChief(String str){
-        String textArray[] = str.split("");
+    public static boolean checkPositionAndGradeOfCommanderChief(String str){
+        String[] textArray = str.split("");
 
-        String titlesForPositionCommander[] = {"The Commander in Chief - ", "The Commander in Chief\n"};
-        String temp = "";
+        String[] titlesForPositionCommander = {"The Commander in Chief - ", "The Commander in Chief\n"};
+        StringBuilder temp = new StringBuilder();
         boolean isEmpty = false;
 
-        String tempArrayWithTitlesbyCommader[] = new String[titlesForPositionCommander.length];
+        String[] tempArrayWithTitlesByCommander = new String[titlesForPositionCommander.length];
         //проверка на наличие предложение в тексте
         if(methodCheckSentence(str, titlesForPositionCommander)){
 
             for (int i = 0; i < titlesForPositionCommander.length; i++) {
                 for (int j = 0; j < textArray.length; j++) {
                     //перебираем текст в виде массива
-                    temp += textArray[j];
+                    temp.append(textArray[j]);
 
-                    if (temp.contains(titlesForPositionCommander[i])) {
+                    if (temp.toString().contains(titlesForPositionCommander[i])) {
                         //находим, в элементы текста в заданной последовательности массива titlesForPositionCommander
                         if (j == 0) isEmpty = false;
                         else isEmpty = true;
                         //методы parseDataPositionFromString и returnSentenceWithCommander парсят строку
                         // от индекса j до точки, далее текст розпарсенный обрабатуется данними методами
-                        tempArrayWithTitlesbyCommader[i] = parseDataPositionFromString(returnSentenceWithCommander(str,j));
+                        tempArrayWithTitlesByCommander[i] = parseDataPositionFromString(returnSentenceWithCommander(str,j));
                         break;
                     }
                 }
             }
             // сравниваем два полученных элемента
-            isEmpty = tempArrayWithTitlesbyCommader[0].equals(tempArrayWithTitlesbyCommader[1]);
+            isEmpty = tempArrayWithTitlesByCommander[0].equals(tempArrayWithTitlesByCommander[1]);
 
         }else {
             JOptionPane.showMessageDialog(null, "The order must include the title, name, and surname of the commander-in-chief!");
@@ -335,7 +349,7 @@ public class CheckTextFile {
     }
 
     //10.1
-    private static String returnSentenceWithCommander(String tempText, int indexFromFirstArray){
+    public static String returnSentenceWithCommander(String tempText, int indexFromFirstArray){
         String sentence = "";
         char[] strToCharArray = tempText.toCharArray();
 
@@ -349,12 +363,12 @@ public class CheckTextFile {
     }
 
     //10.2
-    private static String parseDataPositionFromString(String sentence){
+    public static String parseDataPositionFromString(String sentence){
         // звание которое может быть у главнокомандуещего
         String[] namePositions = {"General of Army", "Сolonel of Aviation"};
         String currentDegree = null;
-        String first_name = "";
-        String last_name = "";
+        String firstName = "";
+        String lastName = "";
 
         for(String degree : namePositions){
             //проверяем на наличение
@@ -370,27 +384,27 @@ public class CheckTextFile {
             //парсим из предложения имя и фамилию
             int index = 0;
             for(int i = 0; i < name.length; i++){
-                if(!operations.TextReader.methodCheckTextСharacters(name[index]) && operations.TextReader.methodCheckTextStrings(name[index])){
-                    first_name = name[index];
+                if(!operations.TextReader.methodCheckTextCharacters(name[index]) && operations.TextReader.methodCheckTextStrings(name[index])){
+                    firstName = name[index];
                 }else {
-                    first_name = name[++index];
+                    firstName = name[++index];
                 }
             }
-            last_name = name[index + 1];
+            lastName = name[index + 1];
         } else {
             JOptionPane.showMessageDialog(null, "The position of commander is not correct.");
         }
 
 
         //отдаем обратно для сравнения
-        return "first_name:" + first_name + ", last_name:" + last_name + ", position: " + currentDegree;
+        return "first_name:" + firstName + ", last_name:" + lastName + ", position: " + currentDegree;
     }
 
 
     //вспомогательные методы
 
     //Наличение числа int
-    static int findIntegerNumber(int index, String textArray[]){
+    public static int findIntegerNumber(int index, String textArray[]){
         Pattern pat = Pattern.compile("[-]?[0-9]+(.[0-9]+)?");
         Matcher matcher;
 
@@ -401,7 +415,7 @@ public class CheckTextFile {
             while (matcher.find()) {
                 result = Integer.parseInt(matcher.group());
                 break;
-            };
+            }
             if(result != 0){
                 break;
             }
@@ -411,21 +425,21 @@ public class CheckTextFile {
     }
 
     //Наличение числа int. ищет до конкретного элемент
-    static int findIntegerNumberToSymbol(int index, String endStrLine, String textArray[]){
+    public static int findIntegerNumberToSymbol(int index, String endStrLine, String textArray[]){
         int result = 0;
         Pattern pat = Pattern.compile("[-]?[0-9]+(.[0-9]+)?");
         Matcher matcher;
 
-        String sentence = "";
+        StringBuilder sentence = new StringBuilder();
 
         for(int i = index; i < textArray.length; i++){
             if(textArray[i].equals(endStrLine) || textArray[i].contains(endStrLine)){
                 break;
             } else{
-                sentence += textArray[i];
+                sentence.append(textArray[i]);
             }
         }
-        matcher = pat.matcher(sentence);
+        matcher = pat.matcher(sentence.toString());
         while (matcher.find()) {
             result = Integer.parseInt(matcher.group());
             break;
@@ -435,7 +449,7 @@ public class CheckTextFile {
     }
 
     //наличие числа double
-    static double findDoubleNumber(int index, String endStrLine, String textArray[]){
+    public static double findDoubleNumber(int index, String endStrLine, String textArray[]){
         double result = 0;
         Pattern pat = Pattern.compile("[-]?[0-9]+(.[0-9]+)?");
         Matcher matcher;
@@ -453,12 +467,12 @@ public class CheckTextFile {
         while (matcher.find()) {
             result = Double.parseDouble(matcher.group());
             break;
-        };
+        }
 
         return result;
     }
 
-    private static boolean searchWordEqualsOrContains(String line, String element){
+    public static boolean searchWordEqualsOrContains(String line, String element){
          if(line.equals(element)) return true;
          else if(line.contains(element)) return true;
 
@@ -466,7 +480,7 @@ public class CheckTextFile {
     }
 
     //2.2 Поиск конкретного символа в строке
-    private static boolean searchCharacterInStringIteration(String regex, String str){
+    public static boolean searchCharacterInStringIteration(String regex, String str){
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(str);
 

@@ -1,6 +1,7 @@
 package operations;
 
 import gui_forms.App;
+import gui_forms.TextForm;
 import model.CrewMembersList;
 import model.LauncherRocketModel;
 import model.StatusLaunch;
@@ -35,15 +36,12 @@ public class TextReader {
     public static String read(String filePath) {
         StringBuilder sb = new StringBuilder();
         try {
-            BufferedReader in = new BufferedReader(new FileReader(new File(filePath).getAbsoluteFile()));
-            try {
+            try (BufferedReader in = new BufferedReader(new FileReader(new File(filePath).getAbsoluteFile()))) {
                 String s;
                 while ((s = in.readLine()) != null) {
                     sb.append(s);
                     sb.append("\n");
                 }
-            } finally {
-                in.close();
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -62,11 +60,11 @@ public class TextReader {
             if(members.checkIdeticalItemCrewMember() && members.checkListOfMemberAboutPositions()
                     && members.makeNextOperations){
                 //3.Находим номер полета и путевку
-                int numberFlight = methodSearhNumberFlightIntheText(text, "order");
+                int numberFlight = methodSearchNumberFlightInTheText(text, "order");
 
                 if(dbHadler.methodCheckFlightInDB(numberFlight)){
                     //просмотр номера по базе
-                    JOptionPane.showMessageDialog(null, "This order's number was in base!");
+                    JOptionPane.showMessageDialog(TextForm.textForm, "This order's number was in base!", "Alert", JOptionPane.ERROR_MESSAGE);
                 }else{
                     //2.Находим город запуска ракеты
                     String cityBaseTakeOff = methodSearchCityBaseInTheText(text);
@@ -112,8 +110,8 @@ public class TextReader {
     }
 
     //1.Находим в списком экипажа по должностям
-    static void methodToolSearchPositionsInTheText(String text) throws Exception {
-        String listCrewMembersPositions[] = {"Commander", "Engineer", "Gunner", "Doctor", "Tourist"};
+    public static void methodToolSearchPositionsInTheText(String text) throws Exception {
+        String[] listCrewMembersPositions = {"Commander", "Engineer", "Gunner", "Doctor", "Tourist"};
 
         char[] strToCharArray = text.toCharArray();
         String currentTextDoc = text.toLowerCase();
@@ -140,20 +138,20 @@ public class TextReader {
 
                     methodForAddOtherSimilarCrewMember(indexWordStart, indexWordEnd, position, strToCharArray, currentTextDoc);
                 } else {
-                    JOptionPane.showMessageDialog(null, "There have'nt " + position + " in the list.");
+                    JOptionPane.showMessageDialog(TextForm.textForm, "There have'nt " + position + " in the list.", "Alert", JOptionPane.ERROR_MESSAGE);
                     //Предотвращает вход на запуск с негативной проверкой
                     members.makeNextOperations = false;
                     break;
                 }
             }
         }else {
-            JOptionPane.showMessageDialog(null, "There must be sentance: 'The Launch  site is...' in the text. ");
+            JOptionPane.showMessageDialog(TextForm.textForm, "There must be sentance: 'The Launch  site is...' in the text. ", "Alert", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     //1.1 Если должность n, не у одного члена экипажа.
     private static void methodForAddOtherSimilarCrewMember(int indexWordStart, int indexWordEnd, String position, char[] strToCharArray, String currentTextDoc) throws Exception {
-        String sentance = "";
+        String sentance;
         int i = 0;
         //берем индекс первого элемента с текущей должностью
         int indexPreviousWord = indexWordStart;
@@ -190,14 +188,14 @@ public class TextReader {
     }
 
     //1.2. Создание обьекта на основе полученных данных
-    private static CrewMember searchDataPersonInSentance(int numberMember, String textSentence) throws Exception{
-        String arrayPerson[] = textSentence.split(" ");
+    private static CrewMember searchDataPersonInSentance(int numberMember, String textSentence){
+        String[] arrayPerson = textSentence.split(" ");
         String position = arrayPerson[0];
         String name = "";
         int index = 1;
 
         for(int i = 0 ; i < arrayPerson.length; i++){
-            if((!methodCheckTextСharacters(arrayPerson[index]) && methodCheckTextStrings(arrayPerson[index]))){
+            if((!methodCheckTextCharacters(arrayPerson[index]) && methodCheckTextStrings(arrayPerson[index]))){
                 name = arrayPerson[index];
             }else {
                 name = arrayPerson[++index];
@@ -211,7 +209,7 @@ public class TextReader {
     }
 
     //1.3 Проверка на наличение символа
-     static boolean methodCheckTextСharacters(String s) {
+     static boolean methodCheckTextCharacters(String s) {
         String specialCharactersString = "!@#$%&*()'+,-./:;<=>?[]^_`{|}";
         boolean result = false;
 
@@ -251,7 +249,8 @@ public class TextReader {
             crewMemberSample  = new Tourist(crewMemberSample.getNumber(), crewMemberSample.getName(), crewMemberSample.getSurname(), crewMemberSample.getPosition());
         }
 
-        return crewMemberSample;
+        CrewMember crewMember = crewMemberSample;
+        return crewMember;
     }
 
 
@@ -278,7 +277,7 @@ public class TextReader {
         }else {
             indexLaunch = searchElementInArrayItem(0, "launch", textArray);
             if (indexLaunch == -1){
-                JOptionPane.showMessageDialog(null, "The text wasn't written correctly!");
+                JOptionPane.showMessageDialog(TextForm.textForm, "The text wasn't written correctly!", "Alert", JOptionPane.ERROR_MESSAGE);
             }
         }
         //В БД нужно добавить отдельно город и отдельно страну
@@ -335,7 +334,7 @@ public class TextReader {
 
             return result.substring(0, 1).toUpperCase() +   result.substring(1);
         }else {
-            JOptionPane.showMessageDialog(null, "Please, enter the launch city correctly!");
+            JOptionPane.showMessageDialog(TextForm.textForm, "Please, enter the launch city correctly!", "Alert", JOptionPane.ERROR_MESSAGE);
             return null;
         }
     }
@@ -355,18 +354,18 @@ public class TextReader {
 
             return result.substring(0, 1).toUpperCase() + result.substring(1);
         }else {
-            JOptionPane.showMessageDialog(null, "Please, enter the launch city correctly!");
+            JOptionPane.showMessageDialog(TextForm.textForm, "Please, enter the launch city correctly!", "Alert", JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
     }
 
     //3.Находим номер полета и номер путевки
-    private static int methodSearhNumberFlightIntheText(String str, String caption) {
+    private static int methodSearchNumberFlightInTheText(String str, String caption) {
         int result = 0;
 
         String allText = str.toLowerCase();
-        String textArray[] = allText.split(" ");
+        String[] textArray = allText.split(" ");
 
         Pattern pat = Pattern.compile("[-]?[0-9]+(.[0-9]+)?");
         Matcher matcher;
@@ -381,7 +380,7 @@ public class TextReader {
                    while (matcher.find()) {
                        result = Integer.parseInt(matcher.group());
                        break;
-                   };
+                   }
                    if(result != 0) break;
                }
            }else {
@@ -394,7 +393,7 @@ public class TextReader {
                while (matcher.find()) {
                    result = Integer.parseInt(matcher.group());
                    break;
-               };
+               }
                if(result != 0) break;
            }
        }
@@ -406,7 +405,7 @@ public class TextReader {
     private static double methodSearchQuelityConsumption(String str) {
         double result = 0;
         String allText = str.toLowerCase();
-        String textArray[] = allText.split(" ");
+        String[] textArray = allText.split(" ");
 
         Pattern pat = Pattern.compile("[-]?[0-9]+(.[0-9]+)?");
         Matcher matcher;
@@ -429,7 +428,7 @@ public class TextReader {
             while (matcher.find()) {
                 result = Double.parseDouble(matcher.group());
                 break;
-            };
+            }
         }
         return result;
     }

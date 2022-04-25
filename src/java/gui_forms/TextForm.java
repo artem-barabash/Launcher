@@ -55,7 +55,7 @@ public class TextForm extends JFrame {
                     textForm.dispose();
 
                 }else {
-                    JOptionPane.showMessageDialog(null, "Please, choose file.");
+                    JOptionPane.showMessageDialog(textForm, "Please, choose file.");
                 }
 
             }
