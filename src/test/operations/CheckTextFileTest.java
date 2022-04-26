@@ -45,6 +45,7 @@ public class CheckTextFileTest extends Archive {
                 CheckTextFile.methodCheckPresenceOfSentenceInTheText(textForm.showExampleTextFromResource("/text/act.txt")));
     }
 
+
     @Test
     public void methodCheckModelRocket() throws IOException {
         assertEquals("message", true,

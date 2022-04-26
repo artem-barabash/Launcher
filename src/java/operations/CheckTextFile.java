@@ -4,6 +4,8 @@ import gui_forms.TextForm;
 import model.CityBase;
 
 import javax.swing.*;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,7 +27,8 @@ public class CheckTextFile {
 
         if (currentTextDoc.length > 100 && currentTextDoc.length < 200) return true;
         else {
-            JOptionPane.showMessageDialog(null, "The text must have at least 100, and not more than 200 words!");
+            JOptionPane.showMessageDialog(TextForm.textForm, "The text must have at least 100, and not more than 200 words!",
+                    "Alert", JOptionPane.ERROR_MESSAGE);
             return false;
         }
     }
@@ -62,7 +65,8 @@ public class CheckTextFile {
 
         if (countSentence >= 12 && countSentence <= 17) return true;
         else {
-            JOptionPane.showMessageDialog(null, "The text must have at least 12 sentences! You have to put dots in sentences.");
+            JOptionPane.showMessageDialog(TextForm.textForm, "The text must have at least 12 sentences! You have to put dots in sentences.",
+                    "Alert", JOptionPane.ERROR_MESSAGE);
             return false;
         }
     }
@@ -82,7 +86,8 @@ public class CheckTextFile {
 
         if(countParagraphs >= 10 && countParagraphs <= 15) return true;
         else {
-            JOptionPane.showMessageDialog(null, "There must be at least 10 paragraphs in the text!");
+            JOptionPane.showMessageDialog(TextForm.textForm, "There must be at least 10 paragraphs in the text!",
+                    "Alert", JOptionPane.ERROR_MESSAGE);
             return false;
         }
     }
@@ -131,49 +136,42 @@ public class CheckTextFile {
                 "of fuel for flight №", "The Commander in Chief\n"
         };
 
-        String[] textArray = str.split("");
-        StringBuilder temp = new StringBuilder();
-
-        if (methodCheckSentence(str, listConcreteSentence)) {
-            for (int i = 0; i < listConcreteSentence.length; i++) {
-                for (int j = 0; j < textArray.length; j++) {
-
-                    temp.append(textArray[j]);
-                    //если отрезки пределожений з массива соовпадают в именно заданной последовательности в listConcreteSentence
-                    //TODO работает не корректно
-                    if (temp.toString().contains(listConcreteSentence[i])) {
-                        if (j == 0) isEmpty = false;
-                        else isEmpty = true;
-                        break;
-                    }
-                }
+        //TreeMap носит в коллекцию уже отсортированное. То есть предложение в том, порядке в которм номер раставленый в тексте
+        TreeMap<Integer, String> treeMap = new TreeMap<>();
+        for (String s : listConcreteSentence){
+            int index = str.indexOf(s);
+            if(index != -1){
+                treeMap.put(index, s);
             }
-            /*for(int i = 0; i < listConcreteSentence.length; i++){
-                if(str.contains(listConcreteSentence[i])){
-                    if(i != numericClass.searchElement(0, listConcreteSentence[i], listConcreteSentence)) {
-                        isEmpty = false;
-                        break;
-                    }else isEmpty = true;
-                }
-            }*/
-        } else {
-            JOptionPane.showMessageDialog(TextForm.textForm, "The text must be write structured!");
         }
-        //System.out.println("isEmpty = " + isEmpty);
 
-        if (!isEmpty) JOptionPane.showMessageDialog(TextForm.textForm, "The sentences must be correct order!");
+        System.out.println(treeMap);
+        //массив String для сравнения
+        String [] tempArray = new String[treeMap.size()];
+        //отправляем в массив
+        int count = 0;
+        for(Map.Entry<Integer, String> entry : treeMap.entrySet()) {
+            tempArray[count] = entry.getValue();
+            count++;
+        }
+
+        //сравнимаем временный и основной масив. Если порядок предложений в временом массиве отличаеться тогда false
+        for(int i = 0; i < listConcreteSentence.length; i++){
+            if(listConcreteSentence[i] == tempArray[i]){
+                isEmpty  = true;
+            }else {
+                isEmpty = false;
+                break;
+            }
+        }
+
+        if (!isEmpty) JOptionPane.showMessageDialog(TextForm.textForm, "The sentences must be correct order!", "Alert", JOptionPane.ERROR_MESSAGE);
 
         return isEmpty;
     }
 
-    //5.1 Проверка наличия приделожений
-    public static boolean methodCheckSentence(String str, String[] listConcreteSentence) {
-        for (String s : listConcreteSentence) {
-            if (str.contains(s)) return true;
-            else break;
-        }
-        return false;
-    }
+    //5.1
+
 
     //6 наличее модели ракеты
     public static boolean methodCheckModelRocket(String str) {
@@ -295,7 +293,7 @@ public class CheckTextFile {
 
     //9.1 проверка города, на соответсвие с зарегистрированными базами
     public static boolean methodCheckBaseForLaunch(String city, String country){
-        CityBase citiesBaseArray [] = {
+        CityBase[] citiesBaseArray = {
                 new CityBase("Korotych", "Ukraine"), new CityBase("Paris", "France"),
                 new CityBase("New York", "USA"), new CityBase("Rio de Janeiro", "Brazil")
         };
@@ -314,34 +312,26 @@ public class CheckTextFile {
 
         String[] titlesForPositionCommander = {"The Commander in Chief - ", "The Commander in Chief\n"};
         StringBuilder temp = new StringBuilder();
-        boolean isEmpty = false;
+        boolean isEmpty;
 
         String[] tempArrayWithTitlesByCommander = new String[titlesForPositionCommander.length];
-        //проверка на наличие предложение в тексте
-        if(methodCheckSentence(str, titlesForPositionCommander)){
 
-            for (int i = 0; i < titlesForPositionCommander.length; i++) {
-                for (int j = 0; j < textArray.length; j++) {
-                    //перебираем текст в виде массива
-                    temp.append(textArray[j]);
 
-                    if (temp.toString().contains(titlesForPositionCommander[i])) {
-                        //находим, в элементы текста в заданной последовательности массива titlesForPositionCommander
-                        if (j == 0) isEmpty = false;
-                        else isEmpty = true;
-                        //методы parseDataPositionFromString и returnSentenceWithCommander парсят строку
-                        // от индекса j до точки, далее текст розпарсенный обрабатуется данними методами
-                        tempArrayWithTitlesByCommander[i] = parseDataPositionFromString(returnSentenceWithCommander(str,j));
-                        break;
-                    }
+        for (int i = 0; i < titlesForPositionCommander.length; i++) {
+            for (int j = 0; j < textArray.length; j++) {
+                //перебираем текст в виде массива
+                temp.append(textArray[j]);
+
+                if (temp.toString().contains(titlesForPositionCommander[i])) {
+                    //методы parseDataPositionFromString и returnSentenceWithCommander парсят строку
+                    // от индекса j до точки, далее текст розпарсенный обрабатуется данними методами
+                    tempArrayWithTitlesByCommander[i] = parseDataPositionFromString(returnSentenceWithCommander(str,j));
+                    break;
                 }
             }
-            // сравниваем два полученных элемента
-            isEmpty = tempArrayWithTitlesByCommander[0].equals(tempArrayWithTitlesByCommander[1]);
-
-        }else {
-            JOptionPane.showMessageDialog(null, "The order must include the title, name, and surname of the commander-in-chief!");
         }
+        // сравниваем два полученных элемента
+        isEmpty = tempArrayWithTitlesByCommander[0].equals(tempArrayWithTitlesByCommander[1]);
 
         if(!isEmpty) JOptionPane.showMessageDialog(null, "The position of commander is not correct.");
         return isEmpty;
@@ -404,7 +394,7 @@ public class CheckTextFile {
     //вспомогательные методы
 
     //Наличение числа int
-    public static int findIntegerNumber(int index, String textArray[]){
+    public static int findIntegerNumber(int index, String[] textArray){
         Pattern pat = Pattern.compile("[-]?[0-9]+(.[0-9]+)?");
         Matcher matcher;
 
@@ -425,7 +415,7 @@ public class CheckTextFile {
     }
 
     //Наличение числа int. ищет до конкретного элемент
-    public static int findIntegerNumberToSymbol(int index, String endStrLine, String textArray[]){
+    public static int findIntegerNumberToSymbol(int index, String endStrLine, String[] textArray){
         int result = 0;
         Pattern pat = Pattern.compile("[-]?[0-9]+(.[0-9]+)?");
         Matcher matcher;
@@ -443,13 +433,13 @@ public class CheckTextFile {
         while (matcher.find()) {
             result = Integer.parseInt(matcher.group());
             break;
-        };
+        }
 
         return result;
     }
 
     //наличие числа double
-    public static double findDoubleNumber(int index, String endStrLine, String textArray[]){
+    public static double findDoubleNumber(int index, String endStrLine, String[] textArray){
         double result = 0;
         Pattern pat = Pattern.compile("[-]?[0-9]+(.[0-9]+)?");
         Matcher matcher;
@@ -473,10 +463,7 @@ public class CheckTextFile {
     }
 
     public static boolean searchWordEqualsOrContains(String line, String element){
-         if(line.equals(element)) return true;
-         else if(line.contains(element)) return true;
-
-        return false;
+        return line.contains(element) || line.contains(element);
     }
 
     //2.2 Поиск конкретного символа в строке
@@ -486,4 +473,5 @@ public class CheckTextFile {
 
         return matcher.find();
     }
+
 }
