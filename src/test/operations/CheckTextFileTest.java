@@ -71,31 +71,4 @@ public class CheckTextFileTest extends Archive {
                 CheckTextFile.checkPositionAndGradeOfCommanderChief(textForm.showExampleTextFromResource("/text/act.txt")));
     }
 
-    @Test
-    public void returnSentenceWithCommander() {
-    }
-
-    @Test
-    public void parseDataPositionFromString() {
-    }
-
-    @Test
-    public void findIntegerNumber() {
-    }
-
-    @Test
-    public void findIntegerNumberToSymbol() {
-    }
-
-    @Test
-    public void findDoubleNumber() {
-    }
-
-    @Test
-    public void searchWordEqualsOrContains() {
-    }
-
-    @Test
-    public void searchCharacterInStringIteration() {
-    }
 }

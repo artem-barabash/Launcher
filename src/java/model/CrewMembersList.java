@@ -14,7 +14,7 @@ public class CrewMembersList extends ArrayList<CrewMember> {
     }
 
     //7.списка экипажа с номерами.
-    public  boolean checkIdeticalItemCrewMember(){
+    public  boolean checkIdenticalItemCrewMember(){
         boolean isEmpty = false;
         for(CrewMember crewMember : this){
             int count = 0;

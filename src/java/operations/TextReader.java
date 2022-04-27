@@ -57,7 +57,7 @@ public class TextReader {
             //1.Находим в списком экипажа по должностям
 
             System.out.println(members.size());
-            if(members.checkIdeticalItemCrewMember() && members.checkListOfMemberAboutPositions()
+            if(members.checkIdenticalItemCrewMember() && members.checkListOfMemberAboutPositions()
                     && members.makeNextOperations){
                 //3.Находим номер полета и путевку
                 int numberFlight = methodSearchNumberFlightInTheText(text, "order");

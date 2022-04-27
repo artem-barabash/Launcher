@@ -210,7 +210,7 @@ public class CheckTextFile {
                     return false;
                 }
             } else {
-                JOptionPane.showMessageDialog(null, "There is'nt article before model's name!");
+                JOptionPane.showMessageDialog(TextForm.textForm, "There is'nt article before model's name!", "Alert", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
         }
@@ -241,7 +241,7 @@ public class CheckTextFile {
         if((TextReader.numberMember == numberFromList) &&
                 (searchCharacterInStringIteration(":", textArray[indexWordPeople]) ||
                         searchCharacterInStringIteration( ":", textArray[indexWordPeople + 1]))) return true;
-        else JOptionPane.showMessageDialog(null, "The quanlity of crew was availabled no correctly!");
+        else JOptionPane.showMessageDialog(TextForm.textForm, "The quanlity of crew was availabled no correctly!");
 
         return false;
     }
@@ -268,7 +268,7 @@ public class CheckTextFile {
             }
             sentence = sentenceBuilder.toString();
         } else{
-            JOptionPane.showMessageDialog(null, "The text wasn't written correctly!");
+            JOptionPane.showMessageDialog(TextForm.textForm, "The text wasn't written correctly!", "Alert", JOptionPane.ERROR_MESSAGE);
         }
 
         String parseCity = operations.TextReader.parseCityFromSentence(sentence);
@@ -278,14 +278,14 @@ public class CheckTextFile {
             isCorrectly = methodCheckBaseForLaunch(parseCity, parseCountry);
 
             if(isCorrectly) base = new CityBase(parseCity, parseCountry);
-            else JOptionPane.showMessageDialog(null, """
+            else JOptionPane.showMessageDialog(TextForm.textForm, """
                     Please, enter the launch city correctly!
                     The list of spaceports:
                     Korotych - Ukraine;
                     Paris - France;
                     New York - USA;
                     Rio de Janeiro - Brazil;
-                    """);
+                    """, "Alert", JOptionPane.ERROR_MESSAGE);
         }
 
         return isCorrectly;
@@ -333,7 +333,7 @@ public class CheckTextFile {
         // сравниваем два полученных элемента
         isEmpty = tempArrayWithTitlesByCommander[0].equals(tempArrayWithTitlesByCommander[1]);
 
-        if(!isEmpty) JOptionPane.showMessageDialog(null, "The position of commander is not correct.");
+        if(!isEmpty) JOptionPane.showMessageDialog(TextForm.textForm, "The position of commander is not correct.", "Alert", JOptionPane.ERROR_MESSAGE);
         return isEmpty;
 
     }
@@ -382,7 +382,7 @@ public class CheckTextFile {
             }
             lastName = name[index + 1];
         } else {
-            JOptionPane.showMessageDialog(null, "The position of commander is not correct.");
+            JOptionPane.showMessageDialog(TextForm.textForm, "The position of commander is not correct.", "Alert", JOptionPane.ERROR_MESSAGE);
         }
 
 
